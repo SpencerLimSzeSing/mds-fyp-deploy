@@ -8,6 +8,7 @@ import folium
 import math
 import pandas as pd
 import plotly.express as px
+from sklearn.model_selection import KFold
 
 st.set_page_config(layout="wide")
 
@@ -140,6 +141,15 @@ with tab1:
     highlight the effectiveness of ensemble methods in capturing the complex relationships
     between meteorological factors, leading to a reliable approach to daily rainfall prediction.
     """)
+    st.markdown("### Data source:")
+    st.write("""
+    The dataset are from Bureau of Meteorology of Australia, comprises 10 years of daily weather 
+    observations with a comprehensive range of meteorological variables. 
+    The observations were gathered from a multitude of weather stations as image below:
+    """)
+    st.image("tab3/map.png", caption="Map of Weather Stations in Australia", width=500)
+
+
 
 # Tab 2: Rainfall Prediction
 with tab2:
@@ -235,7 +245,7 @@ with tab2:
         st.caption("Humidity percentage at 9am.")
         humidity_3pm = st.number_input("Humidity at 3pm (%):", min_value=0.0, max_value=100.0, step=1.0)
         st.caption("Humidity percentage at 3pm.")
-
+    
     # Target-encoded mapping for locations
     location_target_encoded = {
         'Adelaide': 1.5663539307667422, 'Albany': 2.2638594164456234, 'Albury': 1.9141149119893721,
@@ -256,163 +266,35 @@ with tab2:
         'Williamtown': 3.591108499804152, 'Witchcliffe': 2.8956639566395665, 'Wollongong': 3.594902749832327,
         'Woomera': 0.49040454697425606
     }
-    # locations with their corresponding latitudes and longitudes.
-    location_coordinates = {
-        'Albury': (-36.0737, 146.9135),
-        'BadgerysCreek': (-33.9209, 150.7253),
-        'Cobar': (-31.4980, 145.8383),
-        'CoffsHarbour': (-30.2963, 153.1141),
-        'Moree': (-29.4632, 149.8419),
-        'Newcastle': (-32.9267, 151.7789),
-        'NorahHead': (-33.2820, 151.5703),
-        'NorfolkIsland': (-29.0333, 167.9500),
-        'Penrith': (-33.7516, 150.6958),
-        'Richmond': (-33.6000, 150.7500),
-        'Sydney': (-33.8688, 151.2093),
-        'SydneyAirport': (-33.9399, 151.1753),
-        'WaggaWagga': (-35.1175, 147.3671),
-        'Williamtown': (-32.7924, 151.8345),
-        'Wollongong': (-34.4278, 150.8931),
-        'Canberra': (-35.2809, 149.1300),
-        'Tuggeranong': (-35.4245, 149.0664),
-        'MountGinini': (-35.5292, 148.7750),
-        'Ballarat': (-37.5622, 143.8503),
-        'Bendigo': (-36.7587, 144.2802),
-        'Sale': (-38.1067, 147.0680),
-        'MelbourneAirport': (-37.6690, 144.8410),
-        'Melbourne': (-37.8136, 144.9631),
-        'Mildura': (-34.2049, 142.1376),
-        'Nhil': (-36.3313, 141.6547),
-        'Portland': (-38.3420, 141.6040),
-        'Watsonia': (-37.7169, 145.0842),
-        'Dartmoor': (-37.9181, 141.2836),
-        'Brisbane': (-27.4698, 153.0251),
-        'Cairns': (-16.9186, 145.7781),
-        'GoldCoast': (-28.0167, 153.4000),
-        'Townsville': (-19.2580, 146.8183),
-        'Adelaide': (-34.9285, 138.6007),
-        'MountGambier': (-37.8297, 140.7822),
-        'Nuriootpa': (-34.4685, 138.9964),
-        'Woomera': (-31.1501, 136.8255),
-        'Albany': (-35.0270, 117.8847),
-        'Witchcliffe': (-34.0185, 115.1013),
-        'PearceRAAF': (-31.6674, 116.0148),
-        'PerthAirport': (-31.9403, 115.9677),
-        'Perth': (-31.9505, 115.8605),
-        'SalmonGums': (-32.9833, 121.6333),
-        'Walpole': (-34.9762, 116.7333),
-        'Hobart': (-42.8821, 147.3272),
-        'Launceston': (-41.4332, 147.1441),
-        'AliceSprings': (-23.6980, 133.8807),
-        'Darwin': (-12.4634, 130.8456),
-        'Katherine': (-14.4611, 132.2648),
-        'Uluru': (-25.3444, 131.0369)
-    }
-    # Create a folium map centered on Australia
-    m = folium.Map(location=[-25.2744, 133.7751], zoom_start=4)
 
-    # Add markers for each location
-    for location, coord in location_coordinates.items():
-        folium.Marker(
-            location=coord,
-            popup=location,  # Display the location name
-            tooltip="Click to select",
-        ).add_to(m)
+    # Add dropdown for location selection
+    styled_section("Select Location", "#f0f8ff")
+    all_locations = [
+        'Adelaide', 'Albany', 'Albury',
+        'AliceSprings', 'BadgerysCreek', 'Ballarat',
+        'Bendigo', 'Brisbane', 'Cairns',
+        'Canberra', 'Cobar', 'CoffsHarbour',
+        'Dartmoor', 'Darwin', 'GoldCoast',
+        'Hobart', 'Katherine', 'Launceston',
+        'Melbourne', 'MelbourneAirport', 'Mildura',
+        'Moree', 'MountGambier', 'MountGinini',
+        'Newcastle', 'Nhil', 'NorahHead',
+        'NorfolkIsland', 'Nuriootpa', 'PearceRAAF',
+        'Penrith', 'Perth', 'PerthAirport',
+        'Portland', 'Richmond', 'Sale',
+        'SalmonGums', 'Sydney', 'SydneyAirport',
+        'Townsville', 'Tuggeranong', 'Uluru',
+        'WaggaWagga', 'Walpole', 'Watsonia',
+        'Williamtown', 'Witchcliffe', 'Wollongong',
+        'Woomera'
+    ]
+    selected_location = st.selectbox("Select Location:", list(location_target_encoded.keys()))
+    # Get the encoded value for the selected location
+    location_encoded = location_target_encoded[selected_location]
 
+    st.write(f"**Selected Location:** {selected_location}")
 
-    # Create a container to display the map and center it properly
-    with st.container():
-        # Add a styled section for the location map
-        styled_section("Location", "#fff0f5")    
-        st.write("Use the map below to select your location:")
-
-        # Display the map in Streamlit
-        map_output = st_folium(m, use_container_width=True, height=500)
-
-        # Add more specific CSS for the container and iframe
-        st.markdown(
-            """
-            <style>
-            .main > div {
-                padding: 0 !important;
-                margin: 0 auto !important;
-            }
-            .stApp {
-                padding-bottom: 0 !important;
-                margin-bottom: 0 !important;
-            }
-            iframe {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .stContainer {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .css-1kyxreq {
-                margin-bottom: 0px !important;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Get the selected location
-        selected_location = None
-        # Default value for location_encoded
-        location_encoded = None  # Initialize with None to ensure it's defined
-
-        # Function to find the closest location
-        def get_closest_location(lat, lon, location_coordinates, max_distance=0.5):
-            """
-            Find the closest location within the given max_distance.
-
-            Parameters:
-            - lat: Latitude of the clicked location
-            - lon: Longitude of the clicked location
-            - location_coordinates: Dictionary of locations with their coordinates
-            - max_distance: Maximum allowed distance for a match (default is 0.5)
-
-            Returns:
-            - The closest location name or None if no match is within max_distance
-            """
-            min_distance = float("inf")
-            closest_location = None
-            for loc, coord in location_coordinates.items():
-                # Compute Euclidean distance
-                distance = math.sqrt((lat - coord[0])**2 + (lon - coord[1])**2)
-                if distance < min_distance and distance <= max_distance:  # Check max distance threshold
-                    min_distance = distance
-                    closest_location = loc
-            return closest_location
-
-        # Ensure map_output is valid and contains 'last_clicked'
-        if map_output and map_output.get('last_clicked'):
-            lat, lon = map_output['last_clicked']['lat'], map_output['last_clicked']['lng']
-            st.write(f"Clicked coordinates: Latitude = {lat}, Longitude = {lon}")  # Debugging
-
-            # Find the closest location within max distance
-            selected_location = get_closest_location(lat, lon, location_coordinates, max_distance=0.5)
-
-            if selected_location:
-                st.write(f"**Selected Location:** {selected_location}")
-                st.write(f"**Encoded Value:** {location_target_encoded[selected_location]}")
-                location_encoded = location_target_encoded[selected_location]
-            else:
-                st.write("No valid location selected. Try clicking closer to a marker.")
-        else:
-            st.write("Click on a marker to select a location.")
-
-        if location_encoded is None:
-            st.write("Please select a valid location on the map before proceeding.")
-        else:
-            # Continue processing with the valid location_encoded value
-            st.write(f"Using encoded location value: {location_encoded}")
-
-
-    # Dropdown for selecting location
-    #location = st.selectbox("Select Location:", list(location_target_encoded.keys()))
-    #location_encoded = location_target_encoded[location]  # Get the target-encoded value for the selected location
+ 
 
     # Derived features
     dew_point_estimate = min_temp * (humidity_9am / 100)
@@ -423,12 +305,27 @@ with tab2:
     pressure_difference = pressure_3pm - pressure_9am
     temp_difference = temp_3pm - temp_9am
 
+
+
+    # Ensure feature names match those used during model training
+    feature_names = [
+        "MinTemp", "MaxTemp", "Evaporation", "WindGustSpeed", "WindSpeed9am",
+        "WindSpeed3pm", "Humidity9am", "Humidity3pm", "Pressure9am", "Pressure3pm",
+        "Temp9am", "Temp3pm", "Month", "Day", "Location_Target_Encoded", "DewPointEstimate",
+        "AvgHumidity", "AvgTemperature", "TempRange", "TempSunshineInteraction",
+        "PressureDifference", "TempDifference"
+    ]
+
     # Combine all raw features into a single array for base model predictions
     input_features = np.array([[min_temp, max_temp, evaporation, wind_gust_speed, wind_speed_9am,
                                 wind_speed_3pm, humidity_9am, humidity_3pm, pressure_9am, pressure_3pm,
                                 temp_9am, temp_3pm, month, day, location_encoded, dew_point_estimate,
                                 avg_humidity, avg_temperature, temp_range, temp_sunshine_interaction,
                                 pressure_difference, temp_difference]])
+
+    # Convert input_features to a DataFrame with proper column names
+    input_features_df = pd.DataFrame(input_features, columns=feature_names)
+
 
 
     display_mapping = {
@@ -438,97 +335,90 @@ with tab2:
         'Rainfall_Category_Very Heavy Rain': 'Very Heavy Rain (50 mm and higher)'
     }
 
-
-
     if st.button("Predict"):
         st.write("### Predicting Rainfall Category...")
 
+            # Step 1: Generate Meta-Features for Prediction
+        meta_features = np.zeros((1, len(base_models)))  # Initialize meta-feature array for a single sample
 
-        # Load models lazily
-        #knn_model = load_knn_model()
-        #rf_model = load_rf_model()
-        #xgb_model = load_xgb_model()
-        #meta_ann = load_meta_ann_model()
+        for i, model in enumerate(base_models):
+                # Directly predict using the pre-trained base models
+            meta_features[0, i] = model.predict(input_features_df)[0]  # Store the prediction
 
-        # Base model predictions
-        knn_pred = knn_model.predict(input_features)[0]
-        rf_pred = rf_model.predict(input_features)[0]
-        xgb_pred = xgb_model.predict(input_features)[0]
-
-        # Simplified meta-features
-        meta_features = np.array([[knn_pred, rf_pred, xgb_pred]])
+            # Step 2: Use Meta-Learner for Final Prediction
         meta_pred = meta_ann.predict(meta_features)
-        meta_pred_class = np.argmax(meta_pred, axis=1)[0]
+        meta_pred_class = np.argmax(meta_pred, axis=1)[0]  # Get the class with the highest probability
         meta_pred_label = category_mapping[meta_pred_class]
         meta_pred_display = display_mapping[meta_pred_label]
+            # Step 3: Display Results
 
-        # Load Base64 icon dynamically
+            # Load Base64 icon dynamically
         icon_mapping = {
-            'Rainfall_Category_No Rain': get_base64_image('assets/rain1.png'),
-            'Rainfall_Category_Moderate Rain': get_base64_image('assets/rain2.png'),
-            'Rainfall_Category_Heavy Rain': get_base64_image('assets/rain3.png'),
-            'Rainfall_Category_Very Heavy Rain': get_base64_image('assets/rain4.png')
-        }
+                'Rainfall_Category_No Rain': get_base64_image('assets/rain1.png'),
+                'Rainfall_Category_Moderate Rain': get_base64_image('assets/rain2.png'),
+                'Rainfall_Category_Heavy Rain': get_base64_image('assets/rain3.png'),
+                'Rainfall_Category_Very Heavy Rain': get_base64_image('assets/rain4.png')
+            }
         icon_file = icon_mapping[meta_pred_label]  # Get corresponding icon file
 
-        # Additional information mapping for categories
+            # Additional information mapping for categories
         category_info = {
-            'Rainfall_Category_No Rain': """
-            - **Conditions**: Dry weather, no precipitation.
-            - **Impact**: Ideal for outdoor activities.
-            """,
-            'Rainfall_Category_Light Rain': """
-            - **Conditions**: A gentle drizzle rainfall.
-            - **Impact**: Minimal disruption to daily activities, but outdoor activities may not be convenient.
-            """,
-            'Rainfall_Category_Moderate Rain': """
-            - **Conditions**: A consistent moderate rainfall.
-            - **Impact**: May require umbrellas or raincoats for outdoor activities. Some potential for minor disruptions to transportation and outdoor events.
-            """,
-            'Rainfall_Category_Heavy Rain': """
-            - **Conditions**: Intense rainfall, potentially with strong winds and thunderstorms.
-            - **Impact**: Significant disruption to daily life, including transportation delays, road closures, and potential flooding in low-lying areas.
-            """,
-            'Rainfall_Category_Very Heavy Rain': """
-            - **Conditions**: Unusually heavy downpour, often comes with strong winds and thunderstorms.
-            - **Impact**: It is recommended to stay indoors. Potentially leading to flash flooding, stay alert if it happens on consecutive days.
-            """
-        }
+                'Rainfall_Category_No Rain': """
+                - **Conditions**: Dry weather, no precipitation.
+                - **Impact**: Ideal for outdoor activities.
+                """,
+                'Rainfall_Category_Light Rain': """
+                - **Conditions**: A gentle drizzle rainfall.
+                - **Impact**: Minimal disruption to daily activities, but outdoor activities may not be convenient.
+                """,
+                'Rainfall_Category_Moderate Rain': """
+                - **Conditions**: A consistent moderate rainfall.
+                - **Impact**: May require umbrellas or raincoats for outdoor activities. Some potential for minor disruptions to transportation and outdoor events.
+                """,
+                'Rainfall_Category_Heavy Rain': """
+                - **Conditions**: Intense rainfall, potentially with strong winds and thunderstorms.
+                - **Impact**: It is recommended to stay indoors. Potentially leading to transportation delays, road closures, and potential flooding in low-lying areas.
+                """,
+                'Rainfall_Category_Very Heavy Rain': """
+                - **Conditions**: Unusually heavy downpour, often comes with strong winds and thunderstorms.
+                - **Impact**: It is recommended to stay indoors. Potentially leading to flash flooding, stay alert if it happens on consecutive days.
+                """
+            }
 
-        # Fetch the description dynamically based on the predicted label
+            # Fetch the description dynamically based on the predicted label
         predicted_category_description = category_info.get(meta_pred_label, "No description available.")
 
-        # Display the result with the correct description
+            # Display the result with the correct description
         st.markdown(
-            f"""
-            <div style="background-color: #ffffff; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                <h2 style="color: #000;">Predicted Rainfall Category:</h2>
-                <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
-                    <h3 style="margin: 0; color: #000;">{meta_pred_display}</h3>
-                    <img src="data:image/png;base64,{icon_file}" width="80" style="margin-left: 10px;"/>
+                f"""
+                <div style="background-color: #ffffff; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <h2 style="color: #000;">Predicted Rainfall Category:</h2>
+                    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #000;">{meta_pred_display}</h3>
+                        <img src="data:image/png;base64,{icon_file}" width="80" style="margin-left: 10px;"/>
+                    </div>
+                    <ul style="color: #000; list-style-type: disc; padding-left: 20px;">
+                        {predicted_category_description}
+                    </ul>
                 </div>
-                <ul style="color: #000; list-style-type: disc; padding-left: 20px;">
-                    {predicted_category_description}
-                </ul>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+                """,
+                unsafe_allow_html=True
+            )
 
-        # Additional considerations section
+            # Additional considerations section
         st.markdown(
-            """
-            <div style="background-color: #ffffff; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                <h2 style="color: #000;">Additional Considerations</h2>
-                <ul style="color: #000; list-style-type: disc; padding-left: 20px;">
-                    <li>Rainfall patterns and intensity vary across Australia's diverse climate zones.</li>
-                    <li>For the most accurate and up-to-date information on rainfall conditions in Australia, please refer to the <a href="https://bom.gov.au/" target="_blank">Bureau of Meteorology website</a>.</li>
-                    <li>Heavy rain can be dangerous. Always prioritize safety and follow any evacuation orders or warnings from authorities.</li>
-                </ul>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+                """
+                <div style="background-color: #ffffff; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <h2 style="color: #000;">Additional Considerations</h2>
+                    <ul style="color: #000; list-style-type: disc; padding-left: 20px;">
+                        <li>Rainfall patterns and intensity vary across Australia's diverse climate zones.</li>
+                        <li>For the most accurate and up-to-date information on rainfall conditions in Australia, please refer to the <a href="https://bom.gov.au/" target="_blank">Bureau of Meteorology website</a>.</li>
+                        <li>Heavy rain can be dangerous. Always prioritize safety and follow any evacuation orders or warnings from authorities.</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
 
 # Tab 3: 
@@ -573,16 +463,23 @@ with tab3:
         styled_section("Filter by Location", "#f0f8ff")
         # List of all locations
         all_locations = ['All'] + [
-            'Albury', 'BadgerysCreek', 'Cobar', 'CoffsHarbour', 'Moree',
-            'Newcastle', 'NorahHead', 'NorfolkIsland', 'Penrith', 'Richmond',
-            'Sydney', 'SydneyAirport', 'WaggaWagga', 'Williamtown',
-            'Wollongong', 'Canberra', 'Tuggeranong', 'MountGinini', 'Ballarat',
-            'Bendigo', 'Sale', 'MelbourneAirport', 'Melbourne', 'Mildura',
-            'Nhil', 'Portland', 'Watsonia', 'Dartmoor', 'Brisbane', 'Cairns',
-            'GoldCoast', 'Townsville', 'Adelaide', 'MountGambier', 'Nuriootpa',
-            'Woomera', 'Albany', 'Witchcliffe', 'PearceRAAF', 'PerthAirport',
-            'Perth', 'SalmonGums', 'Walpole', 'Hobart', 'Launceston',
-            'AliceSprings', 'Darwin', 'Katherine', 'Uluru'
+            'Adelaide', 'Albany', 'Albury',
+            'AliceSprings', 'BadgerysCreek', 'Ballarat',
+            'Bendigo', 'Brisbane', 'Cairns',
+            'Canberra', 'Cobar', 'CoffsHarbour',
+            'Dartmoor', 'Darwin', 'GoldCoast',
+            'Hobart', 'Katherine', 'Launceston',
+            'Melbourne', 'MelbourneAirport', 'Mildura',
+            'Moree', 'MountGambier', 'MountGinini',
+            'Newcastle', 'Nhil', 'NorahHead',
+            'NorfolkIsland', 'Nuriootpa', 'PearceRAAF',
+            'Penrith', 'Perth', 'PerthAirport',
+            'Portland', 'Richmond', 'Sale',
+            'SalmonGums', 'Sydney', 'SydneyAirport',
+            'Townsville', 'Tuggeranong', 'Uluru',
+            'WaggaWagga', 'Walpole', 'Watsonia',
+            'Williamtown', 'Witchcliffe', 'Wollongong',
+            'Woomera'
         ]
 
         # Dropdown to select location
