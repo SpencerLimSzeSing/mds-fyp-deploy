@@ -9,31 +9,10 @@ import math
 import pandas as pd
 import plotly.express as px
 from sklearn.model_selection import KFold
+import base64
+import datetime
 
 st.set_page_config(layout="wide")
-
-
-@st.cache_resource
-def load_knn_model():
-    return joblib.load("best_knn_model.joblib")
-
-
-@st.cache_resource
-def load_rf_model():
-    return joblib.load("best_rf_model.joblib")
-
-
-@st.cache_resource
-def load_xgb_model():
-    return joblib.load("best_xgb_model.joblib")
-
-
-@st.cache_resource
-def load_meta_ann_model():
-    return tf.keras.models.load_model("BestTuned_meta_ann_model.keras", compile=False)
-
-
-import base64
 
 
 def get_base64_image(file_path):
@@ -119,178 +98,669 @@ def load_data():
 
 data = load_data()
 
+
+def styled_section(header, color):
+    st.markdown(
+        f"""
+        <div style="background-color: {color}; padding: 2px 10px; border-radius: 5px; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: black;">{header}</h4>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 # Tabs for Introduction and Prediction
-tab1, tab2, tab3 = st.tabs(["Introduction", "Rainfall Prediction", "Dashboard"])
+tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
+
+
+st.markdown(
+    """
+    <style>
+
+    .stTabs [data-baseweb="tab-list"] {
+                    justify-content: center;
+                }
+                .stTabs [data-baseweb="tab"] {
+                    font-size: 1.8rem;
+                    padding: 10px 24px;
+                }       
+    .main { background-color: #0e1117; }
+    .project-header {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: white;
+        padding-top: 50px;
+    }
+    .sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
+    .card {
+        background-color: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 15px;
+        padding: 25px;
+        height: 100%;
+    }
+    .card-title { color: white; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
+    .card-text { color: #8b949e; font-size: 0.95rem; line-height: 1.6; }
+    .dash-panel {
+        background: #0a0e1a;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
+        padding: 20px 18px 24px;
+    }
+    .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .panel-icon {
+        background: rgba(59,130,246,0.18);
+        border-radius: 9px;
+        width: 36px; height: 36px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+    }
+    .panel-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: #f1f5f9; }
+    /* Force solid fill on bordered containers only */
+    div[data-testid="stVerticalBlockBorderWrapper"],
+    div[data-testid="stVerticalBlockBorderWrapper"] *,
+    div[data-testid="stVerticalBlockBorderWrapper"] > div,
+    div[data-testid="stVerticalBlockBorderWrapper"] > div > div,
+    div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div,
+    div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div > div {
+        background: #111827 !important;
+        background-color: #111827 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    /* Keep sliders and interactive elements readable */
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] * {
+        background: transparent !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [role="slider"] {
+        background: #3b82f6 !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [data-testid="stSliderTrackFill"] {
+        background: #3b82f6 !important;
+    }
+        div[data-testid="stSlider"] > label { display: none !important; }
+        div[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
+            background: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+        }
+    div[data-testid="stDateInput"] label {
+        font-size: 0.6rem !important; font-weight: 700 !important;
+        letter-spacing: 1.8px !important; text-transform: uppercase !important;
+        color: #64748b !important;
+    }
+    div[data-testid="stDateInput"] input {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 8px !important; color: #e2e8f0 !important;
+    }
+    div[data-testid="stSelectbox"] label {
+        font-size: 0.6rem !important; font-weight: 700 !important;
+        letter-spacing: 1.8px !important; text-transform: uppercase !important;
+        color: #64748b !important;
+    }
+    div[data-testid="stSelectbox"] > div > div {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 8px !important; color: #e2e8f0 !important;
+    }
+    div[data-testid="stButton"] > button {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        color: white !important; border: none !important;
+        border-radius: 10px !important; padding: 12px 28px !important;
+        font-size: 0.88rem !important; font-weight: 700 !important;
+        letter-spacing: 1px !important; text-transform: uppercase !important;
+        width: 100% !important;
+    }
+    div[data-testid="stButton"] > button:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+        box-shadow: 0 8px 25px rgba(37,99,235,0.4) !important;
+    }
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+        background-color: #374151 !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        border-radius: 8px !important;
+        color: #e2e8f0 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Tab 1: Introduction
 with tab1:
-    st.title("Welcome to the Rainfall Prediction App")
-    st.write("""
-    This application predicts rainfall categories based on Meteorological factors. 
-    You can input parameters such as temperature, wind speed, humidity, and atmospheric pressure to get predictions 
-    using an advanced ensemble of machine learning models.
-    - Predict rainfall categories: **No Rain (<5mm), Moderate Rain (5-20mm), Heavy Rain (20-50mm), Very Heavy Rain (>50mm)**
-    """)
-    st.markdown("###Project Title:")
-    st.write("""
-    Meteorological Variable-based Using Stacking Ensemble Learning and ANN.
-    """)
-    st.markdown("### Author:")
-    st.write("""
-    Lim Sze Sing (22109557)
-    """)
-    st.markdown("### Introduction:")
-    st.write("""
-    Accurate daily rainfall prediction is critical for effective water resource management,
-    disaster preparedness, and short-term decision-making. This research focuses on
-    enhancing the accuracy of daily rainfall category classification using a combination of
-    stacking ensemble learning and Artificial Neural Networks (ANN). Traditional machine
-    learning models, while useful, but often struggle with the complexity in meteorological
-    data. To address these challenges, this study proposes the development of a stacking
-    ensemble model that integrates various base learners, including K-Nearest Neighbors
-    (KNN), Random Forest (RF), Extreme Gradient Boosting (XGB) with ANN as the Meta Learner (Meta-ANN).
-    The dataset utilized in this research comprises 10 years of daily weather observations from various 
-    Australian weather stations. The performance of the models were evaluated using metrics such as accuracy, recall,
-    precision and F1-score, and compared against individual base models and a standalone
-    ANN model. This study has shown that the Meta-ANN significantly outperformed the
-    standalone ANN and base models, achieving higher accuracy and balanced performance
-    across rainfall categories. Adjustments such as class weighting and hyperparameter
-    tuning further enhanced the model's ability to address class imbalances. These findings
-    highlight the effectiveness of ensemble methods in capturing the complex relationships
-    between meteorological factors, leading to a reliable approach to daily rainfall prediction.
-    """)
-    st.markdown("### Data source:")
-    st.write("""
-    The dataset are from Bureau of Meteorology of Australia, comprises 10 years of daily weather 
-    observations with a comprehensive range of meteorological variables. 
-    The observations were gathered from a multitude of weather stations as image below:
-    """)
-    st.image("tab3/map.png", caption="Map of Weather Stations in Australia", width=500)
+    # PROJECT OVERVIEW label
+    st.markdown(
+        '<p style="color: #3182ce; font-weight: 600; letter-spacing: 2px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: -20px;">PROJECT OVERVIEW</p>',
+        unsafe_allow_html=True,
+    )
+    # Main title
+    st.markdown(
+        '<h1 class="project-header" style="font-size: 2.8rem; font-weight: 700; letter-spacing: -0.5px;">Advanced Meteorological Forecasting System</h1>',
+        unsafe_allow_html=True,
+    )
 
+    # Subtitle
+    st.markdown(
+        '<p class="sub-title" style="font-size: 1.05rem; color: #a0aec0; line-height: 1.6;">Leveraging stacking ensemble learning and deep neural networks to provide high-precision rainfall classification across Australia\'s diverse climate zones.</p>',
+        unsafe_allow_html=True,
+    )
 
-# Tab 2: Rainfall Prediction
-with tab2:
-    st.title("Rainfall Prediction App")
-    st.write("Predict rainfall category based on climatic factors.")
-    st.header("Input Features")
+    st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
-    # Function to add a background image
-    def add_bg_from_local(image_file):
-        """
-        Adds a background image to a Streamlit app.
+    st.markdown(
+        f"""
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                        <div style="color: #3182ce; font-size: 1.8rem;">☰</div>
+                        <div class="card-title" style="margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px;">Project Background</div>
+                    </div>
+                    <p class="card-text" style="font-size: 1.2rem; color: #cbd5e0; line-height: 1.7;">
+                        Accurate daily rainfall prediction is critical for effective water resource management,
+                        disaster preparedness, and short-term decision-making. Traditional machine
+                        learning models, while useful, but often struggle with the complexity in meteorological
+                        data.
+                        </p>
+                        <p class="card-text" style="font-size: 1.2rem; color: #cbd5e0; line-height: 1.7;">
+                        The performance of the models were evaluated and has shown that the Meta-ANN significantly outperformed the
+                        standalone ANN and base models, achieving higher accuracy and balanced performance
+                        across rainfall categories. Adjustments such as class weighting and hyperparameter
+                        tuning further enhanced the model's ability to address class imbalances. These findings
+                        highlight the effectiveness of ensemble methods in capturing the complex relationships
+                        between meteorological factors, leading to a reliable approach to daily rainfall prediction.
+                    </p>
+                </div>
+            """,
+        unsafe_allow_html=True,
+    )
 
-        Parameters:
-        - image_file: Path to the local image file
-        """
-        with open(image_file, "rb") as f:
-            encoded_image = base64.b64encode(f.read()).decode()
+    st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
 
-        # Inject CSS to set the background image
+    col1, gap, col2 = st.columns([1, 0.05, 1])
+    with col1:
         st.markdown(
             f"""
-            <style>
-            .stApp {{
-                background-image: url("data:image/png;base64,{encoded_image}");
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-            }}
-            </style>
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                        <div style="color: #00d1b2; font-size: 1.8rem;">⚙️</div>
+                        <div class="card-title" style="margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px;">The Methodology</div>
+                    </div>
+                    <p class="card-text" style="font-size: 1.2rem; color: #cbd5e0; line-height: 1.7;">
+                        The system integrates base learners: <strong>K-Nearest Neighbors (KNN)</strong>, <strong>Random Forest (RF)</strong>, and <strong>Extreme Gradient Boosting (XGB)</strong> as base learners, 
+                        with a Meta Learner:<strong>Meta-ANN</strong> learner optimizing the final classification. This multi-layered 
+                        approach captures complex atmospheric non-linearities.
+                    </p>
+                </div>
             """,
             unsafe_allow_html=True,
         )
 
-        # Add the background image (call the function)
-        add_bg_from_local("assets/pexels.jpg")
+    with col2:
+        # --- Data Source ---
+        with open("tab3/map.png", "rb") as f:
+            map_b64 = base64.b64encode(f.read()).decode()
 
-    # Helper function for styling sections
-    def styled_section(header, color):
         st.markdown(
             f"""
-            <div style="background-color: {color}; padding: 2px 10px; border-radius: 5px; margin-bottom: 10px;">
-                <h4 style="margin: 0; color: black;">{header}</h4>
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                    <div style="color: #e67e22; font-size: 1.8rem;">⚡</div>
+                    <div style="margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; color: white;">Data Source</div>
+            </div>
+            <p style="font-size: 1.2rem; color: #cbd5e0; line-height: 1.7; margin-bottom: 16px;">
+                The dataset is sourced from the <strong>Bureau of Meteorology, Australia</strong>, 
+                comprising <strong>10 years</strong> of daily weather observations with a comprehensive 
+                range of meteorological variables. Observations were gathered from weather stations 
+                distributed across Australia, as shown in the map below.
+            </p>
+            <div style="display: flex; justify-content: center;">
+                <img src="data:image/png;base64,{map_b64}" 
+                    alt="Map of Weather Stations in Australia" 
+                    style="width: 80%; border-radius: 8px; object-fit: contain;" />
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    # Date Inputs
-    styled_section("Date", "#f0f8ff")  # Light blue background
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        month = st.number_input("Month (1-12):", min_value=1, max_value=12, step=1)
-    with col2:
-        day = st.number_input("Day (1-31):", min_value=1, max_value=31, step=1)
 
-    # Create a row with three sections
-    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
-    # Weather Features in the first column
-    with col1:
-        styled_section("Weather Features", "#f0f8ff")
-        sunshine = st.number_input(
-            "Sunshine (hours):", min_value=0.0, max_value=15.0, step=0.1
-        )
-        st.caption("Hours of bright sunshine.")
-        evaporation = st.number_input(
-            "Evaporation (mm):", min_value=0.0, max_value=150.0, step=0.1
-        )
-        st.caption("Evaporation in millimeters (mm).")
-    # Atmospheric Pressure Features in the second column
-    with col2:
-        styled_section("Atmospheric Pressure Features", "#f0f8ff")
-        pressure_9am = st.number_input(
-            "Pressure at 9am (hPa):", min_value=900.0, max_value=1100.0, step=0.1
-        )
-        st.caption("Atmospheric pressure at 9am in hPa.")
-        pressure_3pm = st.number_input(
-            "Pressure at 3pm (hPa):", min_value=900.0, max_value=1100.0, step=0.1
-        )
-        st.caption("Atmospheric pressure at 3pm in hPa.")
-    # Temperature Features in the third column
-    with col3:
-        styled_section("Temperature Features", "#f0f8ff")
-        min_temp = st.number_input(
-            "Min Temperature (°C):", min_value=-10.0, max_value=50.0, step=0.1
-        )
-        max_temp = st.number_input(
-            "Max Temperature (°C):", min_value=-10.0, max_value=50.0, step=0.1
-        )
-        temp_9am = st.number_input(
-            "Temperature at 9am (°C):", min_value=-10.0, max_value=50.0, step=0.1
-        )
-        temp_3pm = st.number_input(
-            "Temperature at 3pm (°C):", min_value=-10.0, max_value=50.0, step=0.1
-        )
-    # Wind Features in the first column
-    with col4:
-        styled_section("Wind Features", "#f0f8ff")
-        wind_gust_speed = st.number_input(
-            "Wind Gust Speed (km/h):", min_value=0.0, max_value=200.0, step=1.0
-        )
-        st.caption(
-            "The speed (km/h) of the strongest wind gust in the 24 hours to midnight."
-        )
-        wind_speed_9am = st.number_input(
-            "Wind Speed at 9am (km/h):", min_value=0.0, max_value=150.0, step=1.0
-        )
-        st.caption("Wind speed (km/hr) averaged over 10 minutes prior to 9am.")
-        wind_speed_3pm = st.number_input(
-            "Wind Speed at 3pm (km/h):", min_value=0.0, max_value=150.0, step=1.0
-        )
-        st.caption("Wind speed (km/hr) averaged over 10 minutes prior to 3pm.")
-    # Humidity Features in the second column
-    with col5:
-        styled_section("Humidity Features", "#f0f8ff")
-        humidity_9am = st.number_input(
-            "Humidity at 9am (%):", min_value=0.0, max_value=100.0, step=1.0
-        )
-        st.caption("Humidity percentage at 9am.")
-        humidity_3pm = st.number_input(
-            "Humidity at 3pm (%):", min_value=0.0, max_value=100.0, step=1.0
-        )
-        st.caption("Humidity percentage at 3pm.")
+# Tab 2: Rainfall Prediction
+with tab2:
+    # ── Page heading ────────────────────────────────────────────────────
+    st.markdown(
+        """
+    <div style="margin-bottom:20px;">
+        <h1 style="font-size:2.4rem;font-weight:800;color:#f1f5f9;margin:0 0 4px;">
+            Predictive Modeling
+        </h1>
+        <p style="color:#3b82f6;font-size:0.7rem;font-weight:700;
+                  letter-spacing:3px;text-transform:uppercase;margin:0 0 4px;">
+            Configure meteorological variables to generate a precipitation forecast.
+        </p>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
-    # Target-encoded mapping for locations
+    # ── Main layout: 4 panels + result column ───────────────────────────
+    col_thermal, g1, col_atmos, g2, col_wind, g3, col_temp, g4 = st.columns(
+        [1.1, 0.05, 1.2, 0.05, 1.2, 0.05, 1.2, 0.05]
+    )
+
+    # ───────────────────────────────────────
+    # ── Initialize touched flags once ───────────────────────────────────
+    for key in [
+        "min_temp_touched",
+        "max_temp_touched",
+        "temp_9am_touched",
+        "temp_3pm_touched",
+        "pressure_9am_touched",
+        "pressure_3pm_touched",
+        "humidity_9am_touched",
+        "humidity_3pm_touched",
+        "evaporation_touched",
+        "wind_gust_speed_touched",
+        "wind_speed_9am_touched",
+        "wind_speed_3pm_touched",
+        "sunshine_touched",
+    ]:
+        if key not in st.session_state:
+            st.session_state[key] = False
+
+    # ── Helper: callback factory ─────────────────────────────────────────
+    def make_touch_callback(flag_key):
+        def callback():
+            st.session_state[flag_key] = True
+
+        return callback
+
+    with col_thermal:
+        # Header inside the container
+        st.markdown(
+            """
+        <div style="background:#161b22;border:1px solid #30363d;
+                    border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                            width:36px;height:36px;display:flex;align-items:center;
+                            justify-content:center;font-size:1rem;">🌡️</div>
+                <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                             text-transform:uppercase;color:#f1f5f9;">THERMAL PROFILE</span>
+            </div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+        # ─────────────────────────
+        # MIN TEMP
+        min_temp_val = st.slider(
+            "min_temp",
+            -10.0,
+            50.0,
+            -10.0,
+            0.1,  # ← default changed to -10.0
+            label_visibility="collapsed",
+            on_change=make_touch_callback("min_temp_touched"),
+            key="min_temp_slider",
+        )
+        min_temp = min_temp_val if st.session_state["min_temp_touched"] else None
+        display_min = (
+            f"{min_temp_val}°C" if st.session_state["min_temp_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">MIN TEMP</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_min}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # MAX TEMP
+        max_temp_val = st.slider(
+            "max_temp",
+            -10.0,
+            50.0,
+            -10.0,
+            0.1,  # ← default changed to -10.0
+            label_visibility="collapsed",
+            on_change=make_touch_callback("max_temp_touched"),
+            key="max_temp_slider",
+        )
+        max_temp = max_temp_val if st.session_state["max_temp_touched"] else None
+        display_max = (
+            f"{max_temp_val}°C" if st.session_state["max_temp_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">MAX TEMP</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_max}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # TEMP 9AM
+        temp_9am_val = st.slider(
+            "temp_9am",
+            -10.0,
+            50.0,
+            -10.0,
+            0.1,  # ← default changed to -10.0
+            label_visibility="collapsed",
+            on_change=make_touch_callback("temp_9am_touched"),
+            key="temp_9am_slider",
+        )
+        temp_9am = temp_9am_val if st.session_state["temp_9am_touched"] else None
+        display_temp_9am = (
+            f"{temp_9am_val}°C" if st.session_state["temp_9am_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">TEMP (9AM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_temp_9am}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # TEMP 3PM
+        temp_3pm_val = st.slider(
+            "temp_3pm",
+            -10.0,
+            50.0,
+            -10.0,
+            0.1,  # ← default changed to -10.0
+            label_visibility="collapsed",
+            on_change=make_touch_callback("temp_3pm_touched"),
+            key="temp_3pm_slider",
+        )
+        temp_3pm = temp_3pm_val if st.session_state["temp_3pm_touched"] else None
+        display_temp_3pm = (
+            f"{temp_3pm_val}°C" if st.session_state["temp_3pm_touched"] else "—"
+        )
+
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">TEMP (3PM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_temp_3pm}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+    with col_atmos:
+        st.markdown(
+            """
+        <div style="background:#161b22;border:1px solid #30363d;
+                    border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                            width:36px;height:36px;display:flex;align-items:center;
+                            justify-content:center;font-size:1rem;">🌀</div>
+                <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                             text-transform:uppercase;color:#f1f5f9;">ATMOSPHERIC</span>
+            </div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+        # ─────────────────────────
+        pressure_9am_val = st.slider(
+            "pressure_9am",
+            900.0,
+            1100.0,
+            900.0,
+            0.1,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("pressure_9am_touched"),
+            key="pressure_9am_slider",
+        )
+        pressure_9am = (
+            pressure_9am_val if st.session_state["pressure_9am_touched"] else None
+        )
+        display_pressure_9am = (
+            f"{pressure_9am_val}hPa"
+            if st.session_state["pressure_9am_touched"]
+            else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">PRESSURE (9AM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_pressure_9am}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ─────────────────────────
+        pressure_3pm_val = st.slider(
+            "pressure_3pm",
+            900.0,
+            1100.0,
+            900.0,
+            0.1,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("pressure_3pm_touched"),
+            key="pressure_3pm_slider",
+        )
+        pressure_3pm = (
+            pressure_3pm_val if st.session_state["pressure_3pm_touched"] else None
+        )
+        display_pressure_3pm = (
+            f"{pressure_3pm_val}hPa"
+            if st.session_state["pressure_3pm_touched"]
+            else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">PRESSURE (3PM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_pressure_3pm}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ─────────────────────────
+        humidity_9am_val = st.slider(
+            "humidity_9am",
+            0.0,
+            100.0,
+            0.0,
+            1.0,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("humidity_9am_touched"),
+            key="humidity_9am_slider",
+        )
+        humidity_9am = (
+            humidity_9am_val if st.session_state["humidity_9am_touched"] else None
+        )
+        display_humidity_9am = (
+            f"{humidity_9am_val}%" if st.session_state["humidity_9am_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">HUMIDITY (9AM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_humidity_9am}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ─────────────────────────
+        humidity_3pm_val = st.slider(
+            "humidity_3pm",
+            0.0,
+            100.0,
+            0.0,
+            1.0,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("humidity_3pm_touched"),
+            key="humidity_3pm_slider",
+        )
+        humidity_3pm = (
+            humidity_3pm_val if st.session_state["humidity_3pm_touched"] else None
+        )
+        display_humidity_3pm = (
+            f"{humidity_3pm_val}%" if st.session_state["humidity_3pm_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">HUMIDITY (3PM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_humidity_3pm}</span></div>',
+            unsafe_allow_html=True,
+        )
+        # ─────────────────────────
+        evaporation_val = st.slider(
+            "evaporation",
+            0.0,
+            150.0,
+            0.0,
+            0.1,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("evaporation_touched"),
+            key="evaporation_slider",
+        )
+        evaporation = (
+            evaporation_val if st.session_state["evaporation_touched"] else None
+        )
+        display_evaporation = (
+            f"{evaporation_val}mm" if st.session_state["evaporation_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">EVAPORATION</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_evaporation}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+    with col_wind:
+        st.markdown(
+            """
+            <div style="background:#161b22;border:1px solid #30363d;
+                        border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                                width:36px;height:36px;display:flex;align-items:center;
+                                justify-content:center;font-size:1rem;">💨</div>
+                    <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                                text-transform:uppercase;color:#f1f5f9;">WIND & OTHERS</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        # ─────────────────────────
+        wind_gust_speed_val = st.slider(
+            "wind_gust_speed",
+            0.0,
+            200.0,
+            0.0,
+            1.0,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("wind_gust_speed_touched"),
+            key="wind_gust_speed_slider",
+        )
+        wind_gust_speed = (
+            wind_gust_speed_val if st.session_state["wind_gust_speed_touched"] else None
+        )
+        display_wind_gust_speed = (
+            f"{wind_gust_speed_val}km/h"
+            if st.session_state["wind_gust_speed_touched"]
+            else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">WIND GUST</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_wind_gust_speed}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ─────────────────────────
+        wind_speed_9am_val = st.slider(
+            "wind_9am",
+            0.0,
+            150.0,
+            0.0,
+            1.0,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("wind_speed_9am_touched"),
+            key="wind_speed_9am_slider",
+        )
+        wind_speed_9am = (
+            wind_speed_9am_val if st.session_state["wind_speed_9am_touched"] else None
+        )
+        display_wind_speed_9am = (
+            f"{wind_speed_9am_val}km/h"
+            if st.session_state["wind_speed_9am_touched"]
+            else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">WIND (9AM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_wind_speed_9am}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ─────────────────────────
+        wind_speed_3pm_val = st.slider(
+            "wind_3pm",
+            0.0,
+            150.0,
+            0.0,
+            1.0,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("wind_speed_3pm_touched"),
+            key="wind_speed_3pm_slider",
+        )
+        wind_speed_3pm = (
+            wind_speed_3pm_val if st.session_state["wind_speed_3pm_touched"] else None
+        )
+        display_wind_speed_3pm = (
+            f"{wind_speed_3pm_val}km/h"
+            if st.session_state["wind_speed_3pm_touched"]
+            else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">WIND (3PM)</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_wind_speed_3pm}</span></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ─────────────────────────
+        sunshine_val = st.slider(
+            "sunshine",
+            0.0,
+            15.0,
+            0.0,
+            0.1,
+            label_visibility="collapsed",
+            on_change=make_touch_callback("sunshine_touched"),
+            key="sunshine_slider",
+        )
+        sunshine = sunshine_val if st.session_state["sunshine_touched"] else None
+        display_sunshine = (
+            f"{sunshine_val}h" if st.session_state["sunshine_touched"] else "—"
+        )
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;'
+            f'margin-top:-32px;margin-bottom:8px;pointer-events:none;">'
+            f'<span style="font-size:0.6rem;font-weight:700;letter-spacing:1.8px;'
+            f'text-transform:uppercase;color:#cbd5e0;">SUNSHINE</span>'
+            f'<span style="font-size:0.75rem;font-weight:700;color:#3b82f6;">{display_sunshine}</span></div>',
+            unsafe_allow_html=True,
+        )
+
     location_target_encoded = {
         "Adelaide": 1.5663539307667422,
         "Albany": 2.2638594164456234,
@@ -343,77 +813,123 @@ with tab2:
         "Woomera": 0.49040454697425606,
     }
 
-    # Add dropdown for location selection
-    styled_section("Select Location", "#f0f8ff")
-    all_locations = [
-        "Adelaide",
-        "Albany",
-        "Albury",
-        "AliceSprings",
-        "BadgerysCreek",
-        "Ballarat",
-        "Bendigo",
-        "Brisbane",
-        "Cairns",
-        "Canberra",
-        "Cobar",
-        "CoffsHarbour",
-        "Dartmoor",
-        "Darwin",
-        "GoldCoast",
-        "Hobart",
-        "Katherine",
-        "Launceston",
-        "Melbourne",
-        "MelbourneAirport",
-        "Mildura",
-        "Moree",
-        "MountGambier",
-        "MountGinini",
-        "Newcastle",
-        "Nhil",
-        "NorahHead",
-        "NorfolkIsland",
-        "Nuriootpa",
-        "PearceRAAF",
-        "Penrith",
-        "Perth",
-        "PerthAirport",
-        "Portland",
-        "Richmond",
-        "Sale",
-        "SalmonGums",
-        "Sydney",
-        "SydneyAirport",
-        "Townsville",
-        "Tuggeranong",
-        "Uluru",
-        "WaggaWagga",
-        "Walpole",
-        "Watsonia",
-        "Williamtown",
-        "Witchcliffe",
-        "Wollongong",
-        "Woomera",
-    ]
-    selected_location = st.selectbox(
-        "Select Location:", list(location_target_encoded.keys())
+    with col_temp:
+        st.markdown(
+            """
+        <div style="background:#161b22;border:1px solid #30363d;
+                    border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                            width:36px;height:36px;display:flex;align-items:center;
+                            justify-content:center;font-size:1rem;">📅</div>
+                <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                             text-transform:uppercase;color:#f1f5f9;">TEMPORAL</span>
+            </div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+
+        col_d, col_m = st.columns(2)
+        with col_d:
+            day = st.number_input(
+                "DAY",
+                min_value=1,
+                max_value=31,
+                value=datetime.date.today().day,
+                step=1,
+            )
+        with col_m:
+            month = st.number_input(
+                "MONTH",
+                min_value=1,
+                max_value=12,
+                value=datetime.date.today().month,
+                step=1,
+            )
+
+        # ── Location + Predict moved here ────────────────────────────
+        st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div style="background:#161b22;border:1px solid #30363d;
+                        border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                                width:36px;height:36px;display:flex;align-items:center;
+                                justify-content:center;font-size:1rem;">📍</div>
+                    <span style="font-size:1rem;font-weight:800;letter-spacing:2px;
+                                text-transform:uppercase;color:#f1f5f9;">OBSERVATION LOCATION</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        selected_location = st.selectbox(
+            "Select Location:",
+            list(location_target_encoded.keys()),
+            label_visibility="collapsed",
+        )
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        predict_clicked = st.button("⚡  Generate Forecast")
+
+    # ── col_result: empty or use for live result preview ────────────────
+    st.markdown(
+        """
+        <div style="margin-bottom:20px;">
+            <h1 style="font-size:2.0rem;font-weight:800;color:#f1f5f9;margin:0 0 4px;">
+                Forecast Output
+            </h1>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    # Get the encoded value for the selected location
+
+    if not predict_clicked:
+        st.markdown(
+            """
+            <div style="background:rgba(14,18,30,0.4);border:1px solid rgba(255,255,255,0.05);
+                        border-radius:16px;padding:24px;text-align:center;color:#3b82f6;
+                        font-size:1.1rem;letter-spacing:3px;margin-top:40px;">
+                Awaiting Input:<br> Configure variables and click generate to see the forecast.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    # ── Derived features ─────────────────────────────────────────────────
     location_encoded = location_target_encoded[selected_location]
+    if all(
+        v is not None
+        for v in [
+            min_temp,
+            max_temp,
+            temp_9am,
+            temp_3pm,
+            pressure_9am,
+            pressure_3pm,
+            humidity_9am,
+            humidity_3pm,
+            evaporation,
+            wind_gust_speed,
+            wind_speed_9am,
+            wind_speed_3pm,
+            sunshine,
+        ]
+    ):
+        dew_point_estimate = min_temp * (humidity_9am / 100)
+        avg_humidity = (humidity_9am + humidity_3pm) / 2
+        avg_temperature = (min_temp + max_temp) / 2
+        temp_range = max_temp - min_temp
+        temp_sunshine_interaction = max_temp * sunshine
+        pressure_difference = pressure_3pm - pressure_9am
+        temp_difference = temp_3pm - temp_9am
+    else:
+        dew_point_estimate = avg_humidity = avg_temperature = 0
+        temp_range = temp_sunshine_interaction = pressure_difference = (
+            temp_difference
+        ) = 0
 
-    st.write(f"**Selected Location:** {selected_location}")
-
-    # Derived features
-    dew_point_estimate = min_temp * (humidity_9am / 100)
-    avg_humidity = (humidity_9am + humidity_3pm) / 2
-    avg_temperature = (min_temp + max_temp) / 2
-    temp_range = max_temp - min_temp
-    temp_sunshine_interaction = max_temp * sunshine
-    pressure_difference = pressure_3pm - pressure_9am
-    temp_difference = temp_3pm - temp_9am
-
-    # Ensure feature names match those used during model training
     feature_names = [
         "MinTemp",
         "MaxTemp",
@@ -438,8 +954,6 @@ with tab2:
         "PressureDifference",
         "TempDifference",
     ]
-
-    # Combine all raw features into a single array for base model predictions
     input_features = np.array(
         [
             [
@@ -468,122 +982,147 @@ with tab2:
             ]
         ]
     )
-
-    # Convert input_features to a DataFrame with proper column names
     input_features_df = pd.DataFrame(input_features, columns=feature_names)
 
     display_mapping = {
-        "Rainfall_Category_No Rain": "No Rain (0 mm to 5 mm)",
-        "Rainfall_Category_Moderate Rain": "Moderate Rain (5 mm to 20 mm)",
-        "Rainfall_Category_Heavy Rain": "Heavy Rain (20 mm to 50 mm)",
-        "Rainfall_Category_Very Heavy Rain": "Very Heavy Rain (50 mm and higher)",
+        "Rainfall_Category_No Rain": "No Rain",
+        "Rainfall_Category_Moderate Rain": "Moderate Rain",
+        "Rainfall_Category_Heavy Rain": "Heavy Rain",
+        "Rainfall_Category_Very Heavy Rain": "Very Heavy Rain",
+    }
+    range_mapping = {
+        "Rainfall_Category_No Rain": "0 mm to 5 mm",
+        "Rainfall_Category_Moderate Rain": "5 mm to 20 mm",
+        "Rainfall_Category_Heavy Rain": "20 mm to 50 mm",
+        "Rainfall_Category_Very Heavy Rain": "50 mm and higher",
     }
 
-    if st.button("Predict"):
-        st.write("### Predicting Rainfall Category...")
-
-        # Step 1: Generate Meta-Features for Prediction
-        meta_features = np.zeros(
-            (1, len(base_models))
-        )  # Initialize meta-feature array for a single sample
-
+    if predict_clicked:
+        meta_features = np.zeros((1, len(base_models)))
         for i, model in enumerate(base_models):
-            # Directly predict using the pre-trained base models
-            meta_features[0, i] = model.predict(input_features_df)[
-                0
-            ]  # Store the prediction
+            meta_features[0, i] = model.predict(input_features_df)[0]
 
-            # Step 2: Use Meta-Learner for Final Prediction
         meta_pred = meta_ann.predict(meta_features)
-        meta_pred_class = np.argmax(meta_pred, axis=1)[
-            0
-        ]  # Get the class with the highest probability
+        meta_pred_class = np.argmax(meta_pred, axis=1)[0]
         meta_pred_label = category_mapping[meta_pred_class]
-        meta_pred_display = display_mapping[meta_pred_label]
-        # Step 3: Display Results
+        confidence = int(np.max(meta_pred) * 100)
 
-        # Load Base64 icon dynamically
         icon_mapping = {
             "Rainfall_Category_No Rain": get_base64_image("assets/rain1.png"),
             "Rainfall_Category_Moderate Rain": get_base64_image("assets/rain2.png"),
             "Rainfall_Category_Heavy Rain": get_base64_image("assets/rain3.png"),
             "Rainfall_Category_Very Heavy Rain": get_base64_image("assets/rain4.png"),
         }
-        icon_file = icon_mapping[meta_pred_label]  # Get corresponding icon file
+        icon_file = icon_mapping[meta_pred_label]
 
-        # Additional information mapping for categories
         category_info = {
-            "Rainfall_Category_No Rain": """
-                - **Conditions**: Dry weather, no precipitation.
-                - **Impact**: Ideal for outdoor activities.
-                """,
-            "Rainfall_Category_Light Rain": """
-                - **Conditions**: A gentle drizzle rainfall.
-                - **Impact**: Minimal disruption to daily activities, but outdoor activities may not be convenient.
-                """,
-            "Rainfall_Category_Moderate Rain": """
-                - **Conditions**: A consistent moderate rainfall.
-                - **Impact**: May require umbrellas or raincoats for outdoor activities. Some potential for minor disruptions to transportation and outdoor events.
-                """,
-            "Rainfall_Category_Heavy Rain": """
-                - **Conditions**: Intense rainfall, potentially with strong winds and thunderstorms.
-                - **Impact**: It is recommended to stay indoors. Potentially leading to transportation delays, road closures, and potential flooding in low-lying areas.
-                """,
-            "Rainfall_Category_Very Heavy Rain": """
-                - **Conditions**: Unusually heavy downpour, often comes with strong winds and thunderstorms.
-                - **Impact**: It is recommended to stay indoors. Potentially leading to flash flooding, stay alert if it happens on consecutive days.
-                """,
+            "Rainfall_Category_No Rain": [
+                "☀️ Dry weather, no precipitation.",
+                "✅ Ideal for outdoor activities.",
+            ],
+            "Rainfall_Category_Light Rain": [
+                "🌦 A gentle drizzle.",
+                "🟡 Minimal disruption to daily activities.",
+            ],
+            "Rainfall_Category_Moderate Rain": [
+                "🌧 Consistent moderate rainfall with overcast skies.",
+                "⚠️ Minor disruptions to outdoor activities. Umbrellas recommended.",
+            ],
+            "Rainfall_Category_Heavy Rain": [
+                "⛈ Intense rainfall with strong winds.",
+                "🔴 Stay indoors. Potential flooding in low-lying areas.",
+            ],
+            "Rainfall_Category_Very Heavy Rain": [
+                "🌊 Unusually heavy downpour.",
+                "🚨 High risk of flash flooding. Stay alert.",
+            ],
         }
-
-        # Fetch the description dynamically based on the predicted label
-        predicted_category_description = category_info.get(
-            meta_pred_label, "No description available."
+        bullets = category_info.get(meta_pred_label, ["No description available."])
+        bullets_html = "".join(
+            [
+                f'<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;"><span style="font-size:0.8rem;color:rgba(255,255,255,0.7);">{b}</span></div>'
+                for b in bullets
+            ]
         )
 
-        # Display the result with the correct description
-        st.markdown(
-            f"""
-                <div style="background-color: #ffffff; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                    <h2 style="color: #000;">Predicted Rainfall Category:</h2>
-                    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
-                        <h3 style="margin: 0; color: #000;">{meta_pred_display}</h3>
-                        <img src="data:image/png;base64,{icon_file}" width="80" style="margin-left: 10px;"/>
+        col_res1, col_res2 = st.columns([1, 1])
+
+        with col_res1:
+            st.markdown(
+                f"""
+            <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                        border-radius:16px;padding:24px;color:white;margin-top:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                    <img src="data:image/png;base64,{icon_file}" width="52"
+                         style="background:rgba(255,255,255,0.15);border-radius:10px;padding:6px;"/>
+                    <div style="text-align:right;">
+                        <div style="font-size:0.6rem;font-weight:700;letter-spacing:2px;opacity:0.7;">CONFIDENCE</div>
+                        <div style="font-size:2rem;font-weight:800;line-height:1;">{confidence}%</div>
                     </div>
-                    <ul style="color: #000; list-style-type: disc; padding-left: 20px;">
-                        {predicted_category_description}
+                </div>
+                <div style="font-size:1rem;font-weight:700;letter-spacing:2px;opacity:0.7;margin-bottom:4px;">TODAY PRECIPITATION FORECAST</div>
+                <div style="font-size:1.7rem;font-weight:800;margin-bottom:2px;">{display_mapping[meta_pred_label]}</div>
+                <div style="font-size:1rem;opacity:0.7;margin-bottom:18px;">{range_mapping[meta_pred_label]}</div>
+                <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:14px;">
+                    {bullets_html}
+                </div>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+
+        with col_res2:
+            st.markdown(
+                """
+                <div style="background:rgba(14,18,30,0.92);border:1px solid rgba(255,255,255,0.07);
+                            border-radius:16px;padding:24px;margin-top:16px;">
+                    <div style="font-size:1.2rem;font-weight:700;letter-spacing:2px;
+                                text-transform:uppercase;color:#64748b;margin-bottom:12px;">
+                        SAFETY PROTOCOL
+                    </div>
+                    <p style="color:#94a3b8;font-size:1rem;line-height:1.7;margin-bottom:12px;">
+                        Forecasts are based on historical patterns. For emergency situations,
+                        always prioritize official warnings from the Bureau of Meteorology.
+                    </p>
+                    <ul style="color:#94a3b8;font-size:1rem;line-height:1.8;padding-left:16px;margin-bottom:16px;">
+                        <li>Rainfall patterns vary across Australia's diverse climate zones.</li>
+                        <li>Heavy rain can be dangerous — always follow evacuation orders.</li>
                     </ul>
+                    <a href="https://bom.gov.au/" target="_blank"
+                    style="color:#3b82f6;font-size:1rem;font-weight:600;text-decoration:none;">
+                        View Official Alerts →
+                    </a>
                 </div>
                 """,
-            unsafe_allow_html=True,
-        )
-
-        # Additional considerations section
-        st.markdown(
-            """
-                <div style="background-color: #ffffff; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                    <h2 style="color: #000;">Additional Considerations</h2>
-                    <ul style="color: #000; list-style-type: disc; padding-left: 20px;">
-                        <li>Rainfall patterns and intensity vary across Australia's diverse climate zones.</li>
-                        <li>For the most accurate and up-to-date information on rainfall conditions in Australia, please refer to the <a href="https://bom.gov.au/" target="_blank">Bureau of Meteorology website</a>.</li>
-                        <li>Heavy rain can be dangerous. Always prioritize safety and follow any evacuation orders or warnings from authorities.</li>
-                    </ul>
-                </div>
-                """,
-            unsafe_allow_html=True,
-        )
-
+                unsafe_allow_html=True,
+            )
 
 # Tab 3:
 with tab3:
-    st.title("Dashboard:")
-    # st.write("This tab provides insights into the dataset with interactive visualizations.")
+    st.title("Historical Analytics Dashboard:")
+    st.write("Deep dive into regional meteorological trends.")
     # Filters Section
     st.subheader("")
     col1, col2 = st.columns(2)
 
     # Add date range slider
     with col1:
-        styled_section("Filter by Date Range", "#f0f8ff")
+        st.markdown(
+            """
+        <div style="background:#161b22;border:1px solid #30363d;
+                    border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                            width:36px;height:36px;display:flex;align-items:center;
+                            justify-content:center;font-size:1rem;">🗓️</div>
+                <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                             text-transform:uppercase;color:#f1f5f9;">Filter by Date Range</span>
+            </div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+        # styled_section("Filter by Date Range", "#f0f8ff")
         data["Date"] = pd.to_datetime(data[["Year", "Month", "Day"]])
         min_date = data["Date"].min().date()  # Extract the earliest date
         max_date = data["Date"].max().date()  # Extract the latest date
@@ -612,8 +1151,22 @@ with tab3:
 
     # Location Dropdown in the second column
     with col2:
-        # Add location filter using dropdown
-        styled_section("Filter by Location", "#f0f8ff")
+        st.markdown(
+            """
+        <div style="background:#161b22;border:1px solid #30363d;
+                    border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                            width:36px;height:36px;display:flex;align-items:center;
+                            justify-content:center;font-size:1rem;">📍</div>
+                <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                             text-transform:uppercase;color:#f1f5f9;">Filter by Location</span>
+            </div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+
         # List of all locations
         all_locations = ["All"] + [
             "Adelaide",
@@ -681,8 +1234,23 @@ with tab3:
                 filtered_data["Location"] == selected_location
             ]
 
-    # Scorecard Section
-    styled_section("Metrics", "#f0f8ff")
+        # Scorecard Section
+    st.markdown(
+        """
+    <div style="background:#161b22;border:1px solid #30363d;
+                border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                        width:36px;height:36px;display:flex;align-items:center;
+                        justify-content:center;font-size:1rem;">📈</div>
+            <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                            text-transform:uppercase;color:#f1f5f9;">Metrics</span>
+        </div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
     if not filtered_data.empty:
         col1, col2, col3, col4, col5, col6 = st.columns(6)
         col1.metric("Min Temperature (°C)", filtered_data["MinTemp"].min())
