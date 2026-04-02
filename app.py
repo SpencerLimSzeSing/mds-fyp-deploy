@@ -183,7 +183,7 @@ st.markdown(
     }
     .sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
     .card {
-        background-color: rgba(22, 27, 34, 0.85) !important;  /* ← 0.85 = slight transparency */
+        background-color: rgba(22, 27, 34, 0.75) !important;  
         border: 1px solid #30363d !important;
         border-radius: 15px !important;
         padding: 25px !important;
@@ -405,7 +405,7 @@ with tab2:
         # Header inside the container
         st.markdown(
             """
-        <div style="background:#161b22;border:1px solid #30363d;
+        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -519,7 +519,7 @@ with tab2:
     with col_atmos:
         st.markdown(
             """
-        <div style="background:#161b22;border:1px solid #30363d;
+        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -668,7 +668,7 @@ with tab2:
     with col_wind:
         st.markdown(
             """
-            <div style="background:#161b22;border:1px solid #30363d;
+            <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -844,7 +844,7 @@ with tab2:
     with col_temp:
         st.markdown(
             """
-        <div style="background:#161b22;border:1px solid #30363d;
+        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -880,7 +880,7 @@ with tab2:
         st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
         st.markdown(
             """
-            <div style="background:#161b22;border:1px solid #30363d;
+            <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1138,7 +1138,7 @@ with tab3:
     with col1:
         st.markdown(
             """
-        <div style="background:#161b22;border:1px solid #30363d;
+        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1182,7 +1182,7 @@ with tab3:
     with col2:
         st.markdown(
             """
-        <div style="background:#161b22;border:1px solid #30363d;
+        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1266,7 +1266,7 @@ with tab3:
         # Scorecard Section
     st.markdown(
         """
-    <div style="background:#161b22;border:1px solid #30363d;
+    <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                 border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
             <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1362,7 +1362,7 @@ with tab3:
         with col2:
             st.markdown(
                 """
-            <div style="background:#161b22;border:1px solid #30363d;
+            <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
