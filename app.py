@@ -177,7 +177,7 @@ st.markdown(
     .stTabs [data-baseweb="tab-border"] {
         display: none !important;
     }      
-    .main { background-color: #0e1117; }
+   
     .project-header {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         color: white;
@@ -211,18 +211,7 @@ st.markdown(
         font-size: 1rem;
     }
     .panel-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: #f1f5f9; }
-    /* Force solid fill on bordered containers only */
-    div[data-testid="stVerticalBlockBorderWrapper"],
-    div[data-testid="stVerticalBlockBorderWrapper"] *,
-    div[data-testid="stVerticalBlockBorderWrapper"] > div,
-    div[data-testid="stVerticalBlockBorderWrapper"] > div > div,
-    div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div,
-    div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div > div {
-        background: rgba(17, 24, 39, 0.75) !important;
-        background-color: rgba(17, 24, 39, 0.75) !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
+
     /* Keep sliders and interactive elements readable */
     div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] * {
         background: transparent !important;
