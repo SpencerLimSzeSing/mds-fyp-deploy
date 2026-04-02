@@ -144,14 +144,18 @@ def make_touch_callback(flag_key):
 st.markdown(
     """
     <style>
-
     .stTabs [data-baseweb="tab-list"] {
-                    justify-content: center;
-                }
-                .stTabs [data-baseweb="tab"] {
-                    font-size: 1.8rem;
-                    padding: 10px 24px;
-                }       
+        justify-content: center !important;
+        gap: 8px !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 1.8rem !important;
+        padding: 10px 24px !important;
+    }
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #3b82f6 !important;
+    }
+           
     .main { background-color: #0e1117; }
     .project-header {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -160,14 +164,18 @@ st.markdown(
     }
     .sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
     .card {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 15px;
-        padding: 25px;
-        height: 100%;
+        background-color: #161b22 !important;
+        border: 1px solid #30363d !important;
+        border-radius: 15px !important;
+        padding: 25px !important;
+        height: 100% !important;
+    }
+    .card-text {
+        color: #cbd5e0 !important;
+        font-size: 1.2rem !important;
+        line-height: 1.7 !important;
     }
     .card-title { color: white; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
-    .card-text { color: #8b949e; font-size: 0.95rem; line-height: 1.6; }
     .dash-panel {
         background: #0a0e1a;
         border: 1px solid rgba(255,255,255,0.07);
