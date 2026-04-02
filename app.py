@@ -12,6 +12,25 @@ from sklearn.model_selection import KFold
 import base64
 import datetime
 
+if "min_temp_touched" not in st.session_state:
+    _keys = [
+        "min_temp_touched",
+        "max_temp_touched",
+        "temp_9am_touched",
+        "temp_3pm_touched",
+        "pressure_9am_touched",
+        "pressure_3pm_touched",
+        "humidity_9am_touched",
+        "humidity_3pm_touched",
+        "evaporation_touched",
+        "wind_gust_speed_touched",
+        "wind_speed_9am_touched",
+        "wind_speed_3pm_touched",
+        "sunshine_touched",
+    ]
+    for k in _keys:
+        st.session_state.setdefault(k, False)
+
 st.set_page_config(layout="wide")
 
 
@@ -105,29 +124,6 @@ def styled_section(header, color):
         """,
         unsafe_allow_html=True,
     )
-
-
-# Replace your current initialization loop with this
-try:
-    for key in [
-        "min_temp_touched",
-        "max_temp_touched",
-        "temp_9am_touched",
-        "temp_3pm_touched",
-        "pressure_9am_touched",
-        "pressure_3pm_touched",
-        "humidity_9am_touched",
-        "humidity_3pm_touched",
-        "evaporation_touched",
-        "wind_gust_speed_touched",
-        "wind_speed_9am_touched",
-        "wind_speed_3pm_touched",
-        "sunshine_touched",
-    ]:
-        if key not in st.session_state:
-            st.session_state[key] = False
-except Exception:
-    pass
 
 
 # ── Helper: callback factory ─────────────────────────────────────────
@@ -405,7 +401,7 @@ with tab2:
         # Header inside the container
         st.markdown(
             """
-        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -519,7 +515,7 @@ with tab2:
     with col_atmos:
         st.markdown(
             """
-        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -668,7 +664,7 @@ with tab2:
     with col_wind:
         st.markdown(
             """
-            <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -844,7 +840,7 @@ with tab2:
     with col_temp:
         st.markdown(
             """
-        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -880,7 +876,7 @@ with tab2:
         st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
         st.markdown(
             """
-            <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1138,7 +1134,7 @@ with tab3:
     with col1:
         st.markdown(
             """
-        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1182,7 +1178,7 @@ with tab3:
     with col2:
         st.markdown(
             """
-        <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1266,7 +1262,7 @@ with tab3:
         # Scorecard Section
     st.markdown(
         """
-    <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+    <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                 border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
             <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1362,7 +1358,7 @@ with tab3:
         with col2:
             st.markdown(
                 """
-            <div style="background:rgba(22,27,34,0.75);border:1px solid #30363d;
+            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
