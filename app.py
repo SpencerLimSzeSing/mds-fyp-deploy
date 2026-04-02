@@ -99,6 +99,18 @@ def add_bg_from_local(image_file):
         [data-testid="stHeader"] {{
             background-color: rgba(0,0,0,0.4) !important;
         }}
+        [data-testid="stAppViewContainer"],
+        [data-testid="stMainBlockContainer"],
+        [data-testid="block-container"],
+        [data-testid="stVerticalBlock"],
+        [data-testid="stVerticalBlockBorderWrapper"],
+        [data-testid="stVerticalBlockBorderWrapper"] *,
+        .main, .block-container,
+        section.main > div {
+            background: transparent !important;
+            background-color: transparent !important;
+            backdrop-filter: none !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
