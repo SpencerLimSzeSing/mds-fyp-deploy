@@ -325,28 +325,6 @@ with tab1:
 
 # Tab 2: Rainfall Prediction
 with tab2:
-    # ── Page heading ────────────────────────────────────────────────────
-    st.markdown(
-        """
-    <div style="margin-bottom:20px;">
-        <h1 style="font-size:2.4rem;font-weight:800;color:#f1f5f9;margin:0 0 4px;">
-            Predictive Modeling
-        </h1>
-        <p style="color:#3b82f6;font-size:0.7rem;font-weight:700;
-                  letter-spacing:3px;text-transform:uppercase;margin:0 0 4px;">
-            Configure meteorological variables to generate a precipitation forecast.
-        </p>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    # ── Main layout: 4 panels + result column ───────────────────────────
-    col_thermal, g1, col_atmos, g2, col_wind, g3, col_temp, g4 = st.columns(
-        [1.1, 0.05, 1.2, 0.05, 1.2, 0.05, 1.2, 0.05]
-    )
-
-    # ───────────────────────────────────────
     # ── Initialize touched flags once ───────────────────────────────────
     for key in [
         "min_temp_touched",
@@ -372,6 +350,29 @@ with tab2:
             st.session_state[flag_key] = True
 
         return callback
+
+    # ── Page heading ────────────────────────────────────────────────────
+    st.markdown(
+        """
+    <div style="margin-bottom:20px;">
+        <h1 style="font-size:2.4rem;font-weight:800;color:#f1f5f9;margin:0 0 4px;">
+            Predictive Modeling
+        </h1>
+        <p style="color:#3b82f6;font-size:0.7rem;font-weight:700;
+                  letter-spacing:3px;text-transform:uppercase;margin:0 0 4px;">
+            Configure meteorological variables to generate a precipitation forecast.
+        </p>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    # ── Main layout: 4 panels + result column ───────────────────────────
+    col_thermal, g1, col_atmos, g2, col_wind, g3, col_temp, g4 = st.columns(
+        [1.1, 0.05, 1.2, 0.05, 1.2, 0.05, 1.2, 0.05]
+    )
+
+    # ───────────────────────────────────────
 
     with col_thermal:
         # Header inside the container
@@ -873,6 +874,7 @@ with tab2:
         st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
         predict_clicked = st.button("⚡  Generate Forecast")
 
+    location_encoded = location_target_encoded[selected_location]
     # ── col_result: empty or use for live result preview ────────────────
     st.markdown(
         """
@@ -898,7 +900,7 @@ with tab2:
         )
 
     # ── Derived features ─────────────────────────────────────────────────
-    location_encoded = location_target_encoded[selected_location]
+
     if all(
         v is not None
         for v in [
