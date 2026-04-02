@@ -12,26 +12,26 @@ from sklearn.model_selection import KFold
 import base64
 import datetime
 
-if "min_temp_touched" not in st.session_state:
-    _keys = [
-        "min_temp_touched",
-        "max_temp_touched",
-        "temp_9am_touched",
-        "temp_3pm_touched",
-        "pressure_9am_touched",
-        "pressure_3pm_touched",
-        "humidity_9am_touched",
-        "humidity_3pm_touched",
-        "evaporation_touched",
-        "wind_gust_speed_touched",
-        "wind_speed_9am_touched",
-        "wind_speed_3pm_touched",
-        "sunshine_touched",
-    ]
-    for k in _keys:
-        st.session_state.setdefault(k, False)
-
 st.set_page_config(layout="wide")
+
+# ── Session state init AFTER set_page_config ─────────────────────────
+for k in [
+    "min_temp_touched",
+    "max_temp_touched",
+    "temp_9am_touched",
+    "temp_3pm_touched",
+    "pressure_9am_touched",
+    "pressure_3pm_touched",
+    "humidity_9am_touched",
+    "humidity_3pm_touched",
+    "evaporation_touched",
+    "wind_gust_speed_touched",
+    "wind_speed_9am_touched",
+    "wind_speed_3pm_touched",
+    "sunshine_touched",
+]:
+    if k not in st.session_state:
+        st.session_state[k] = False
 
 
 def get_base64_image(file_path):
