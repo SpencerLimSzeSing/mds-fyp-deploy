@@ -181,8 +181,10 @@ def main():
     }
     .sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
     .card {
-        background-color: rgba(22, 27, 34, 0.75) !important;  
-        border: 1px solid #30363d !important;
+        background: rgba(255,255,255,0.08) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
         border-radius: 15px !important;
         padding: 25px !important;
     }
@@ -193,11 +195,10 @@ def main():
     }
     .card-title { color: white; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
     .dash-panel {
-        background: #0a0e1a;
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 16px;
-        padding: 20px 18px 24px;
-    }
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);}
     .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
     .panel-icon {
         background: rgba(59,130,246,0.18);
@@ -256,7 +257,8 @@ def main():
         box-shadow: 0 8px 25px rgba(37,99,235,0.4) !important;
     }
     div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-        background-color: #374151 !important;
+        background-color: rgba(255,255,255,0.08) !important;
+        backdrop-filter: blur(10px) !important;
         border: 1px solid rgba(255,255,255,0.15) !important;
         border-radius: 8px !important;
         color: #e2e8f0 !important;
@@ -392,7 +394,7 @@ def main():
             # Header inside the container
             st.markdown(
                 """
-            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+            <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -506,7 +508,7 @@ def main():
         with col_atmos:
             st.markdown(
                 """
-            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+            <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -655,7 +657,7 @@ def main():
         with col_wind:
             st.markdown(
                 """
-                <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+                <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                             border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -831,7 +833,7 @@ def main():
         with col_temp:
             st.markdown(
                 """
-            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+            <div style="background:background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -867,7 +869,7 @@ def main():
             st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
             st.markdown(
                 """
-                <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+                <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                             border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -904,7 +906,7 @@ def main():
         if not predict_clicked:
             st.markdown(
                 """
-                <div style="background:rgba(14,18,30,0.4);border:1px solid rgba(255,255,255,0.05);
+                <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                             border-radius:16px;padding:24px;text-align:center;color:#3b82f6;
                             font-size:1.1rem;letter-spacing:3px;margin-top:40px;">
                     Awaiting Input:<br> Configure variables and click generate to see the forecast.
@@ -1090,7 +1092,7 @@ def main():
             with col_res2:
                 st.markdown(
                     """
-                    <div style="background:rgba(14,18,30,0.92);border:1px solid rgba(255,255,255,0.07);
+                    <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                                 border-radius:16px;padding:24px;margin-top:16px;">
                         <div style="font-size:1.2rem;font-weight:700;letter-spacing:2px;
                                     text-transform:uppercase;color:#64748b;margin-bottom:12px;">
@@ -1125,7 +1127,7 @@ def main():
     with col1:
         st.markdown(
             """
-        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+        <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1169,7 +1171,7 @@ def main():
     with col2:
         st.markdown(
             """
-        <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+        <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                     border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1253,7 +1255,7 @@ def main():
         # Scorecard Section
     st.markdown(
         """
-    <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+    <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                 border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
             <div style="background:rgba(59,130,246,0.18);border-radius:9px;
@@ -1349,7 +1351,7 @@ def main():
         with col2:
             st.markdown(
                 """
-            <div style="background:rgba(0,0,0,0.45);border:1px solid #30363d;
+            <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);
                         border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="background:rgba(59,130,246,0.18);border-radius:9px;
