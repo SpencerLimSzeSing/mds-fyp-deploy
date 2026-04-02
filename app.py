@@ -89,28 +89,27 @@ def add_bg_from_local(image_file):
     st.markdown(
         f"""
         <style>
+        /* Paint the image on the root app element */
         .stApp {{
             background-image: url("data:image/png;base64,{encoded_image}") !important;
             background-size: cover !important;
             background-repeat: no-repeat !important;
             background-position: center center !important;
-            background-attachment: scroll !important;
+        }}
+        /* Remove ALL other background colors */
+        .stApp > div,
+        .stApp > div > div,
+        .stApp > div > div > div,
+        .stApp > div > div > section,
+        .stApp > div > div > section > div,
+        .stApp > div > div > section > div > div,
+        .stApp > div > div > section > div > div > div {{
+            background-color: transparent !important;
+            background: transparent !important;
         }}
         [data-testid="stHeader"] {{
             background-color: rgba(0,0,0,0.4) !important;
         }}
-        [data-testid="stAppViewContainer"],
-        [data-testid="stMainBlockContainer"],
-        [data-testid="block-container"],
-        [data-testid="stVerticalBlock"],
-        [data-testid="stVerticalBlockBorderWrapper"],
-        [data-testid="stVerticalBlockBorderWrapper"] *,
-        .main, .block-container,
-        section.main > div {
-            background: transparent !important;
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-        }
         </style>
         """,
         unsafe_allow_html=True,
