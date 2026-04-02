@@ -35,6 +35,12 @@ for k in [
         st.session_state[k] = False
 
 
+def get_base64_image(file_path):
+    """Convert image file to Base64."""
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+
 #  background
 st.markdown(
     """
