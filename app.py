@@ -61,16 +61,9 @@ category_mapping = {
 
 # Function to add a background image globally
 def add_bg_from_local(image_file):
-    """
-    Adds a background image to a Streamlit app.
-
-    Parameters:
-    - image_file: Path to the local image file
-    """
     with open(image_file, "rb") as f:
         encoded_image = base64.b64encode(f.read()).decode()
 
-    # Inject CSS to set the background image globally
     st.markdown(
         f"""
         <style>
@@ -78,7 +71,21 @@ def add_bg_from_local(image_file):
             background-image: url("data:image/png;base64,{encoded_image}");
             background-size: cover;
             background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-attachment: scroll;        /* ← was 'fixed', broken on Cloud */
+            background-position: center center;
+        }}
+        /* Ensure containers don't block the background */
+        [data-testid="stAppViewContainer"] {{
+            background: transparent !important;
+        }}
+        [data-testid="stHeader"] {{
+            background: rgba(0,0,0,0.3) !important;
+        }}
+        [data-testid="stMainBlockContainer"] {{
+            background: transparent !important;
+        }}
+        section[data-testid="stSidebar"] {{
+            background: rgba(14,18,30,0.85) !important;
         }}
         </style>
         """,
@@ -148,10 +155,6 @@ tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction"
 st.markdown(
     """
     <style>
-    .stTabs [data-baseweb="tab-list"] {
-        justify-content: center !important;
-        gap: 8px !important;
-    }
     /* Force full-width dark tab bar */
     .stTabs {
         background: transparent !important;
@@ -181,15 +184,7 @@ st.markdown(
     }
     .stTabs [data-baseweb="tab-border"] {
         display: none !important;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-size: 1.8rem !important;
-        padding: 10px 24px !important;
-    }
-    .stTabs [data-baseweb="tab-highlight"] {
-        background-color: #3b82f6 !important;
-    }
-           
+    }      
     .main { background-color: #0e1117; }
     .project-header {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
