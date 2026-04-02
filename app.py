@@ -183,11 +183,10 @@ st.markdown(
     }
     .sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
     .card {
-        background-color: #161b22 !important;
+        background-color: rgba(22, 27, 34, 0.85) !important;  /* ← 0.85 = slight transparency */
         border: 1px solid #30363d !important;
         border-radius: 15px !important;
         padding: 25px !important;
-        height: 100% !important;
     }
     .card-text {
         color: #cbd5e0 !important;
