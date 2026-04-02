@@ -110,9 +110,6 @@ def styled_section(header, color):
     )
 
 
-# Tabs for Introduction and Prediction
-tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
-
 # Replace your current initialization loop with this
 try:
     for key in [
@@ -144,6 +141,10 @@ def make_touch_callback(flag_key):
     return callback
 
 
+# Tabs for Introduction and Prediction
+tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
+
+# ── CSS ───────────
 st.markdown(
     """
     <style>
