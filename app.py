@@ -89,26 +89,22 @@ def add_bg_from_local(image_file):
     st.markdown(
         f"""
         <style>
-        /* Paint the image on the root app element */
+        /* Override Streamlit dark theme background */
         .stApp {{
             background-image: url("data:image/png;base64,{encoded_image}") !important;
             background-size: cover !important;
             background-repeat: no-repeat !important;
             background-position: center center !important;
-        }}
-        /* Remove ALL other background colors */
-        .stApp > div,
-        .stApp > div > div,
-        .stApp > div > div > div,
-        .stApp > div > div > section,
-        .stApp > div > div > section > div,
-        .stApp > div > div > section > div > div,
-        .stApp > div > div > section > div > div > div {{
             background-color: transparent !important;
+        }}
+        [data-testid="stAppViewContainer"] {{
             background: transparent !important;
         }}
-        [data-testid="stHeader"] {{
-            background-color: rgba(0,0,0,0.4) !important;
+        [data-testid="stMain"] {{
+            background: transparent !important;
+        }}
+        [data-testid="block-container"] {{
+            background: transparent !important;
         }}
         </style>
         """,
