@@ -71,7 +71,7 @@ def add_bg_from_local(image_file):
             background-image: url("data:image/png;base64,{encoded_image}");
             background-size: cover;
             background-repeat: no-repeat;
-            background-attachment: scroll;        /* ← was 'fixed', broken on Cloud */
+            background-attachment: scroll;        
             background-position: center center;
         }}
         /* Ensure containers don't block the background */
