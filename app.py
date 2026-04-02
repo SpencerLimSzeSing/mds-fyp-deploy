@@ -56,6 +56,7 @@ def add_bg_from_local(image_file):
             background-repeat: no-repeat !important;
             background-position: center center !important;
             background-color: transparent !important;
+            background-attachment: fixed !important;
         }}
         [data-testid="stAppViewContainer"] {{
             background: transparent !important;
@@ -66,7 +67,7 @@ def add_bg_from_local(image_file):
         [data-testid="block-container"] {{
             background: transparent !important;
         }}
-        [data-testid="stHeader"] {{
+[data-testid="stHeader"] {{
             background: transparent !important;
         }}
         [data-testid="stSidebar"] {{
@@ -77,6 +78,29 @@ def add_bg_from_local(image_file):
         }}
         .stTabs, [data-baseweb="tab-panel"] {{
             background: transparent !important;
+        }}
+        /* These are the actual dark background culprits */
+        [data-testid="stAppViewContainer"] > section {{
+            background: transparent !important;
+        }}
+        [data-testid="stAppViewBlockContainer"] {{
+            background: transparent !important;
+        }}
+        [data-testid="stMainBlockContainer"] {{
+            background: transparent !important;
+        }}
+        [data-testid="stBottom"] {{
+            background: transparent !important;
+        }}
+        div.stApp {{
+            background-color: transparent !important;
+        }}
+        /* Nuke the root element dark fill */
+        html, body {{
+            background-color: transparent !important;
+        }}
+        #root > div {{
+            background-color: transparent !important;
         }}
         </style>
         """,
