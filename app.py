@@ -35,81 +35,29 @@ for k in [
         st.session_state[k] = False
 
 
-def get_base64_image(file_path):
-    """Convert image file to Base64."""
-    with open(file_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-
-# Function to add a background image globally
-def add_bg_from_local(image_file):
-    with open(image_file, "rb") as f:
-        encoded_image = base64.b64encode(f.read()).decode()
-
-    st.markdown(
-        f"""
-        <style>
-        /* Override Streamlit dark theme background */
-        .stApp {{
-            background-image: url("data:image/png;base64,{encoded_image}") !important;
-            background-size: cover !important;
-            background-repeat: no-repeat !important;
-            background-position: center center !important;
-            background-color: transparent !important;
-            background-attachment: fixed !important;
-        }}
-        [data-testid="stAppViewContainer"] {{
-            background: transparent !important;
-        }}
-        [data-testid="stMain"] {{
-            background: transparent !important;
-        }}
-        [data-testid="block-container"] {{
-            background: transparent !important;
-        }}
-[data-testid="stHeader"] {{
-            background: transparent !important;
-        }}
-        [data-testid="stSidebar"] {{
-            background: transparent !important;
-        }}
-        section[data-testid="stMain"] > div {{
-            background: transparent !important;
-        }}
-        .stTabs, [data-baseweb="tab-panel"] {{
-            background: transparent !important;
-        }}
-        /* These are the actual dark background culprits */
-        [data-testid="stAppViewContainer"] > section {{
-            background: transparent !important;
-        }}
-        [data-testid="stAppViewBlockContainer"] {{
-            background: transparent !important;
-        }}
-        [data-testid="stMainBlockContainer"] {{
-            background: transparent !important;
-        }}
-        [data-testid="stBottom"] {{
-            background: transparent !important;
-        }}
-        div.stApp {{
-            background-color: transparent !important;
-        }}
-        /* Nuke the root element dark fill */
-        html, body {{
-            background-color: transparent !important;
-        }}
-        #root > div {{
-            background-color: transparent !important;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-# Call the function once, globally
-add_bg_from_local("assets/pexels.jpg")
+#  background
+st.markdown(
+    """
+    <style>
+    html, body, .stApp,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="block-container"],
+    [data-testid="stHeader"],
+    [data-testid="stAppViewContainer"] > section,
+    [data-testid="stAppViewBlockContainer"],
+    [data-testid="stMainBlockContainer"],
+    section[data-testid="stMain"] > div {
+        background: #0f1117 !important;
+        background-color: #0f1117 !important;
+    }
+    .stTabs, [data-baseweb="tab-panel"] {
+        background: transparent !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # Model loading with caching
