@@ -1331,7 +1331,21 @@ with tab3:
 
         # Filtered Data Table
         with col2:
-            st.subheader("Filtered Data Table")
+            st.markdown(
+                """
+            <div style="background:#161b22;border:1px solid #30363d;
+                        border-radius:14px;padding:16px 20px 12px 20px;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="background:rgba(59,130,246,0.18);border-radius:9px;
+                                width:36px;height:36px;display:flex;align-items:center;
+                                justify-content:center;font-size:1rem;">☰</div>
+                    <span style="font-size:1.5rem;font-weight:800;letter-spacing:2.5px;
+                                    text-transform:uppercase;color:#f1f5f9;">Filtered Data Table</span>
+                </div>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
             st.dataframe(filtered_data)
     else:
         st.write("No data available to display graphs.")
