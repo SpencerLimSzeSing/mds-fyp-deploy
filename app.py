@@ -152,6 +152,36 @@ st.markdown(
         justify-content: center !important;
         gap: 8px !important;
     }
+    /* Force full-width dark tab bar */
+    .stTabs {
+        background: transparent !important;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        justify-content: center !important;
+        gap: 8px !important;
+        background-color: transparent !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+        padding-bottom: 4px !important;
+        width: 100% !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 1.8rem !important;
+        padding: 10px 24px !important;
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+        border: none !important;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #f1f5f9 !important;
+        background-color: transparent !important;
+    }
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #3b82f6 !important;
+        height: 3px !important;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none !important;
+    }
     .stTabs [data-baseweb="tab"] {
         font-size: 1.8rem !important;
         padding: 10px 24px !important;
