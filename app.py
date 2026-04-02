@@ -113,24 +113,27 @@ def styled_section(header, color):
 # Tabs for Introduction and Prediction
 tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
 
-# ── Initialize touched flags once ───────────────────────────────────
-for key in [
-    "min_temp_touched",
-    "max_temp_touched",
-    "temp_9am_touched",
-    "temp_3pm_touched",
-    "pressure_9am_touched",
-    "pressure_3pm_touched",
-    "humidity_9am_touched",
-    "humidity_3pm_touched",
-    "evaporation_touched",
-    "wind_gust_speed_touched",
-    "wind_speed_9am_touched",
-    "wind_speed_3pm_touched",
-    "sunshine_touched",
-]:
-    if key not in st.session_state:
-        st.session_state[key] = False
+# Replace your current initialization loop with this
+try:
+    for key in [
+        "min_temp_touched",
+        "max_temp_touched",
+        "temp_9am_touched",
+        "temp_3pm_touched",
+        "pressure_9am_touched",
+        "pressure_3pm_touched",
+        "humidity_9am_touched",
+        "humidity_3pm_touched",
+        "evaporation_touched",
+        "wind_gust_speed_touched",
+        "wind_speed_9am_touched",
+        "wind_speed_3pm_touched",
+        "sunshine_touched",
+    ]:
+        if key not in st.session_state:
+            st.session_state[key] = False
+except Exception:
+    pass
 
 
 # ── Helper: callback factory ─────────────────────────────────────────
