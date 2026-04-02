@@ -216,8 +216,8 @@ st.markdown(
     div[data-testid="stVerticalBlockBorderWrapper"] > div > div,
     div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div,
     div[data-testid="stVerticalBlockBorderWrapper"] > div > div > div > div {
-        background: #111827 !important;
-        background-color: #111827 !important;
+        background: rgba(17, 24, 39, 0.75) !important;
+        background-color: rgba(17, 24, 39, 0.75) !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
