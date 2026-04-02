@@ -15,23 +15,26 @@ import datetime
 st.set_page_config(layout="wide")
 
 # ── Session state init AFTER set_page_config ─────────────────────────
-for k in [
-    "min_temp_touched",
-    "max_temp_touched",
-    "temp_9am_touched",
-    "temp_3pm_touched",
-    "pressure_9am_touched",
-    "pressure_3pm_touched",
-    "humidity_9am_touched",
-    "humidity_3pm_touched",
-    "evaporation_touched",
-    "wind_gust_speed_touched",
-    "wind_speed_9am_touched",
-    "wind_speed_3pm_touched",
-    "sunshine_touched",
-]:
-    if k not in st.session_state:
-        st.session_state[k] = False
+import streamlit.runtime.scriptrunner as _sr
+
+if _sr.get_script_run_ctx() is not None:
+    for k in [
+        "min_temp_touched",
+        "max_temp_touched",
+        "temp_9am_touched",
+        "temp_3pm_touched",
+        "pressure_9am_touched",
+        "pressure_3pm_touched",
+        "humidity_9am_touched",
+        "humidity_3pm_touched",
+        "evaporation_touched",
+        "wind_gust_speed_touched",
+        "wind_speed_9am_touched",
+        "wind_speed_3pm_touched",
+        "sunshine_touched",
+    ]:
+        if k not in st.session_state:
+            st.session_state[k] = False
 
 
 def get_base64_image(file_path):
@@ -129,7 +132,10 @@ def styled_section(header, color):
 # ── Helper: callback factory ─────────────────────────────────────────
 def make_touch_callback(flag_key):
     def callback():
-        st.session_state[flag_key] = True
+        import streamlit.runtime.scriptrunner as _sr
+
+        if _sr.get_script_run_ctx() is not None:
+            st.session_state[flag_key] = True
 
     return callback
 
