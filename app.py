@@ -215,10 +215,6 @@ st.markdown(
     background-color: rgba(59,130,246,0.4) !important;
     border: 1px solid rgba(59,130,246,0.6) !important;
 }
-.stTabs [aria-selected="true"] {
-    color: #f1f5f9 !important;
-    background-color: transparent !important;
-}
 .stTabs [data-baseweb="tab-highlight"] {
     background-color: #3b82f6 !important;
     height: 3px !important;
@@ -315,11 +311,23 @@ div[data-testid="stButton"] > button:hover {
     box-shadow: 0 8px 25px rgba(37,99,235,0.4) !important;
 }
 div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-    background-color: rgba(255,255,255,0.08) !important;
+    background-color: rgba(255,255,255,0.9) !important;
     backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
     border-radius: 8px !important;
-    color: #e2e8f0 !important;
+    color: #000000 !important;
+}
+div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {
+    color: #000000 !important;
+}
+[data-testid="stSlider"] [data-baseweb="slider"] > div:first-child {
+    background: rgba(0,0,0,0.35) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
 }
 </style>
 """,
@@ -1299,9 +1307,6 @@ with tab3:
         # Dropdown to select location
         selected_location = st.selectbox(
             "Select Location:", options=all_locations, key="location_selectbox"
-        )
-        st.markdown(
-            "<style>label {color:black !important;}</style>", unsafe_allow_html=True
         )
         # Filter data by selected location
         if selected_location == "All":
