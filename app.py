@@ -68,24 +68,14 @@ def add_bg_from_local(image_file):
         f"""
         <style>
         .stApp {{
-            background-image: url("data:image/png;base64,{encoded_image}");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: scroll;        
-            background-position: center center;
-        }}
-        /* Ensure containers don't block the background */
-        [data-testid="stAppViewContainer"] {{
-            background: transparent !important;
+            background-image: url("data:image/png;base64,{encoded_image}") !important;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            background-attachment: scroll !important;
         }}
         [data-testid="stHeader"] {{
-            background: rgba(0,0,0,0.3) !important;
-        }}
-        [data-testid="stMainBlockContainer"] {{
-            background: transparent !important;
-        }}
-        section[data-testid="stSidebar"] {{
-            background: rgba(14,18,30,0.85) !important;
+            background-color: rgba(0,0,0,0.4) !important;
         }}
         </style>
         """,
