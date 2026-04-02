@@ -201,9 +201,19 @@ st.markdown(
 .stTabs [data-baseweb="tab"] {
     font-size: 1.8rem !important;
     padding: 10px 24px !important;
-    background-color: transparent !important;
-    color: #94a3b8 !important;
-    border: none !important;
+    background-color: rgba(255,255,255,0.12) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    margin: 0 4px !important;
+}
+.stTabs [aria-selected="true"] {
+    color: #ffffff !important;
+    background-color: rgba(59,130,246,0.4) !important;
+    border: 1px solid rgba(59,130,246,0.6) !important;
 }
 .stTabs [aria-selected="true"] {
     color: #f1f5f9 !important;
@@ -262,11 +272,16 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [role="s
 div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [data-testid="stSliderTrackFill"] {
     background: #3b82f6 !important;
 }
-    div[data-testid="stSlider"] > label { display: none !important; }
-    div[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
-        background: #3b82f6 !important;
-        border-color: #3b82f6 !important;
-    }
+/* Slider track background (unfilled portion) */
+[data-testid="stSlider"] [data-baseweb="slider"] [role="progressbar"] {
+    background: rgba(0,0,0,0.4) !important;
+}
+[data-testid="stSlider"] [data-baseweb="slider"] div[data-testid="stSliderTrack"] {
+    background: rgba(0,0,0,0.4) !important;
+}
+[data-testid="stSlider"] [data-baseweb="slider"] > div > div {
+    background: rgba(0,0,0,0.4) !important;
+}
 div[data-testid="stDateInput"] label {
     font-size: 0.6rem !important; font-weight: 700 !important;
     letter-spacing: 1.8px !important; text-transform: uppercase !important;
@@ -1285,7 +1300,9 @@ with tab3:
         selected_location = st.selectbox(
             "Select Location:", options=all_locations, key="location_selectbox"
         )
-
+        st.markdown(
+            "<style>label {color:black !important;}</style>", unsafe_allow_html=True
+        )
         # Filter data by selected location
         if selected_location == "All":
             st.markdown("### Showing data for all locations.")
