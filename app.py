@@ -76,12 +76,6 @@ def load_meta_ann_model():
     )
 
 
-# Load models
-knn_model = load_knn_model()
-rf_model = load_rf_model()
-xgb_model = load_xgb_model()
-meta_ann = load_meta_ann_model()
-base_models = [knn_model, rf_model, xgb_model]
 # Category mapping
 category_mapping = {
     0: "Rainfall_Category_No Rain",
@@ -114,6 +108,13 @@ def styled_section(header, color):
 
 # ----  UI (tabs, etc.) ----
 tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
+
+# Load models
+knn_model = load_knn_model()
+rf_model = load_rf_model()
+xgb_model = load_xgb_model()
+meta_ann = load_meta_ann_model()
+base_models = [knn_model, rf_model, xgb_model]
 
 # Background image CSS
 st.markdown(
