@@ -14,6 +14,25 @@ import datetime
 
 
 st.set_page_config(layout="wide")
+# ── Session state init ─────────────────────────────────────────────
+if "session_initialized" not in st.session_state:
+    for k in [
+        "min_temp_touched",
+        "max_temp_touched",
+        "temp_9am_touched",
+        "temp_3pm_touched",
+        "pressure_9am_touched",
+        "pressure_3pm_touched",
+        "humidity_9am_touched",
+        "humidity_3pm_touched",
+        "evaporation_touched",
+        "wind_gust_speed_touched",
+        "wind_speed_9am_touched",
+        "wind_speed_3pm_touched",
+        "sunshine_touched",
+    ]:
+        st.session_state[k] = False
+    st.session_state["session_initialized"] = True
 
 
 # background — must be called immediately after set_page_config
@@ -51,26 +70,6 @@ def add_bg_from_local(image_file):
 
 
 add_bg_from_local("assets/pexels.jpg")
-
-# ── Session state init ─────────────────────────────────────────────
-if "session_initialized" not in st.session_state:
-    for k in [
-        "min_temp_touched",
-        "max_temp_touched",
-        "temp_9am_touched",
-        "temp_3pm_touched",
-        "pressure_9am_touched",
-        "pressure_3pm_touched",
-        "humidity_9am_touched",
-        "humidity_3pm_touched",
-        "evaporation_touched",
-        "wind_gust_speed_touched",
-        "wind_speed_9am_touched",
-        "wind_speed_3pm_touched",
-        "sunshine_touched",
-    ]:
-        st.session_state[k] = False
-    st.session_state["session_initialized"] = True
 
 
 def get_base64_image(file_path):
