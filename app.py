@@ -35,41 +35,38 @@ if "session_initialized" not in st.session_state:
     st.session_state["session_initialized"] = True
 
 
-# background — must be called immediately after set_page_config
-def add_bg_from_local(image_file):
-    with open(image_file, "rb") as f:
-        encoded_image = base64.b64encode(f.read()).decode()
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/jpeg;base64,{encoded_image}") !important;
-            background-size: cover !important;
-            background-repeat: no-repeat !important;
-            background-position: center center !important;
-            background-attachment: fixed !important;
-        }}
-        [data-testid="stAppViewContainer"],
-        [data-testid="stMain"],
-        [data-testid="block-container"],
-        [data-testid="stHeader"],
-        [data-testid="stAppViewContainer"] > section,
-        [data-testid="stAppViewBlockContainer"],
-        [data-testid="stMainBlockContainer"],
-        section[data-testid="stMain"] > div {{
-            background: transparent !important;
-            background-color: transparent !important;
-        }}
-        .stTabs, [data-baseweb="tab-panel"] {{
-            background: transparent !important;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-add_bg_from_local("assets/pexels.jpg")
+# background
+# ── Background ─────────────────────────────────────────────────────
+with open("assets/pexels.jpg", "rb") as _f:
+    _encoded = base64.b64encode(_f.read()).decode()
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/jpeg;base64,{_encoded}") !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-attachment: fixed !important;
+    }}
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="block-container"],
+    [data-testid="stHeader"],
+    [data-testid="stAppViewContainer"] > section,
+    [data-testid="stAppViewBlockContainer"],
+    [data-testid="stMainBlockContainer"],
+    section[data-testid="stMain"] > div {{
+        background: transparent !important;
+        background-color: transparent !important;
+    }}
+    .stTabs, [data-baseweb="tab-panel"] {{
+        background: transparent !important;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 def get_base64_image(file_path):
