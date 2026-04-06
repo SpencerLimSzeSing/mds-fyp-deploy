@@ -112,20 +112,29 @@ def styled_section(header, color):
     )
 
 
-# ---- your UI (tabs, etc.) ----
+# ----  UI (tabs, etc.) ----
 tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
 
-# ── CSS ───────────
+# Background image CSS
 st.markdown(
-    """
+    f"""
     <style>
-   .stApp {{
+    .stApp {{
         background-image: url("data:image/jpeg;base64,{_encoded}") !important;
         background-size: cover !important;
         background-repeat: no-repeat !important;
         background-position: center center !important;
         background-attachment: fixed !important;
     }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# All other CSS
+st.markdown(
+    """
+    <style>
     [data-testid="stAppViewContainer"],
     [data-testid="stMain"],
     [data-testid="block-container"],
@@ -133,15 +142,11 @@ st.markdown(
     [data-testid="stAppViewContainer"] > section,
     [data-testid="stAppViewBlockContainer"],
     [data-testid="stMainBlockContainer"],
-    section[data-testid="stMain"] > div {{
+    section[data-testid="stMain"] > div {
         background: transparent !important;
         background-color: transparent !important;
-    }}
-    .stTabs, [data-baseweb="tab-panel"] {{
-        background: transparent !important;
-    }}
-    /* Force full-width dark tab bar */
-    .stTabs {
+    }
+    .stTabs, [data-baseweb="tab-panel"] {
         background: transparent !important;
     }
     .stTabs [data-baseweb="tab-list"] {
@@ -175,8 +180,7 @@ st.markdown(
     }
     .stTabs [data-baseweb="tab-border"] {
         display: none !important;
-    }      
-
+    }
     .project-header {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         color: white;
@@ -191,66 +195,25 @@ st.markdown(
         border-radius: 15px !important;
         padding: 25px !important;
     }
-    .card-text {
-        color: #cbd5e0 !important;
-        font-size: 1.2rem !important;
-        line-height: 1.7 !important;
-    }
+    .card-text { color: #cbd5e0 !important; font-size: 1.2rem !important; line-height: 1.7 !important; }
     .card-title { color: white; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
-    .dash-panel {
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);}
-    .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-    .panel-icon {
-        background: rgba(59,130,246,0.18);
-        border-radius: 9px;
-        width: 36px; height: 36px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1rem;
-    }
-    .panel-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: #f1f5f9; }
-
-    /* Keep sliders and interactive elements readable */
-    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] * {
-        background: transparent !important;
-    }
-    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [role="slider"] {
+    div[data-testid="stSlider"] > label { display: none !important; }
+    div[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
         background: #3b82f6 !important;
-    }
-    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [data-testid="stSliderTrackFill"] {
-        background: #3b82f6 !important;
-    }
-    /* Slider track background (unfilled portion) */
-    [data-testid="stSlider"] [data-baseweb="slider"] [role="progressbar"] {
-        background: rgba(0,0,0,0.4) !important;
-    }
-    [data-testid="stSlider"] [data-baseweb="slider"] div[data-testid="stSliderTrack"] {
-        background: rgba(0,0,0,0.4) !important;
-    }
-    [data-testid="stSlider"] [data-baseweb="slider"] > div > div {
-        background: rgba(0,0,0,0.4) !important;
-    }
-    div[data-testid="stDateInput"] label {
-        font-size: 0.6rem !important; font-weight: 700 !important;
-        letter-spacing: 1.8px !important; text-transform: uppercase !important;
-        color: #64748b !important;
-    }
-    div[data-testid="stDateInput"] input {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 8px !important; color: #e2e8f0 !important;
+        border-color: #3b82f6 !important;
     }
     div[data-testid="stSelectbox"] label {
         font-size: 0.6rem !important; font-weight: 700 !important;
         letter-spacing: 1.8px !important; text-transform: uppercase !important;
         color: #64748b !important;
     }
-    div[data-testid="stSelectbox"] > div > div {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 8px !important; color: #e2e8f0 !important;
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+        background-color: rgba(255,255,255,0.9) !important;
+        border-radius: 8px !important;
+        color: #000000 !important;
+    }
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {
+        color: #000000 !important;
     }
     div[data-testid="stButton"] > button {
         background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
@@ -264,30 +227,15 @@ st.markdown(
         background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
         box-shadow: 0 8px 25px rgba(37,99,235,0.4) !important;
     }
-    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-        background-color: rgba(255,255,255,0.9) !important;
-        backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255,255,255,0.3) !important;
-        border-radius: 8px !important;
-        color: #000000 !important;
-    }
-    div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {
-        color: #000000 !important;
-    }
     [data-testid="stSlider"] [data-baseweb="slider"] > div:first-child {
         background: rgba(0,0,0,0.35) !important;
         height: 4px !important;
         border-radius: 2px !important;
     }
-    [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
-        background: #3b82f6 !important;
-        border-color: #3b82f6 !important;
-    }
-</style>
-""",
+    </style>
+    """,
     unsafe_allow_html=True,
 )
-
 
 # Tab 1: Introduction
 with tab1:
