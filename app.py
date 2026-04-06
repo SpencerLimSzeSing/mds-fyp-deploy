@@ -35,44 +35,22 @@ if "session_initialized" not in st.session_state:
     st.session_state["session_initialized"] = True
 
 
-# background
-# ── Background ─────────────────────────────────────────────────────
+# ── Read image ONLY — no st calls yet ─────────────────────────────
 with open("assets/pexels.jpg", "rb") as _f:
     _encoded = base64.b64encode(_f.read()).decode()
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/jpeg;base64,{_encoded}") !important;
-        background-size: cover !important;
-        background-repeat: no-repeat !important;
-        background-position: center center !important;
-        background-attachment: fixed !important;
-    }}
-    [data-testid="stAppViewContainer"],
-    [data-testid="stMain"],
-    [data-testid="block-container"],
-    [data-testid="stHeader"],
-    [data-testid="stAppViewContainer"] > section,
-    [data-testid="stAppViewBlockContainer"],
-    [data-testid="stMainBlockContainer"],
-    section[data-testid="stMain"] > div {{
-        background: transparent !important;
-        background-color: transparent !important;
-    }}
-    .stTabs, [data-baseweb="tab-panel"] {{
-        background: transparent !important;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 
 def get_base64_image(file_path):
-    """Convert image file to Base64."""
     with open(file_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
+
+# ── Helper: callback factory ─────────────────────────────────────────
+def make_touch_callback(flag_key):
+    def callback():
+        st.session_state[flag_key] = True
+
+    return callback
 
 
 # Model loading with caching
@@ -134,164 +112,177 @@ def styled_section(header, color):
     )
 
 
-# ── Helper: callback factory ─────────────────────────────────────────
-def make_touch_callback(flag_key):
-    def callback():
-        st.session_state[flag_key] = True
-
-    return callback
-
-
 # ---- your UI (tabs, etc.) ----
 tab1, tab2, tab3 = st.tabs(["ℹ️ Introduction", "🌧️ Rainfall Prediction", "📊 Dashboard"])
 
 # ── CSS ───────────
 st.markdown(
     """
-<style>
-/* Force full-width dark tab bar */
-.stTabs {
-    background: transparent !important;
-}
-.stTabs [data-baseweb="tab-list"] {
-    justify-content: center !important;
-    gap: 8px !important;
-    background-color: transparent !important;
-    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
-    padding-bottom: 4px !important;
-    width: 100% !important;
-}
-.stTabs [data-baseweb="tab"] {
-    font-size: 1.8rem !important;
-    padding: 10px 24px !important;
-    background-color: rgba(255,255,255,0.12) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-    border-radius: 10px !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    margin: 0 4px !important;
-}
-.stTabs [aria-selected="true"] {
-    color: #ffffff !important;
-    background-color: rgba(59,130,246,0.4) !important;
-    border: 1px solid rgba(59,130,246,0.6) !important;
-}
-.stTabs [data-baseweb="tab-highlight"] {
-    background-color: #3b82f6 !important;
-    height: 3px !important;
-}
-.stTabs [data-baseweb="tab-border"] {
-    display: none !important;
-}      
+    <style>
+   .stApp {{
+        background-image: url("data:image/jpeg;base64,{_encoded}") !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-attachment: fixed !important;
+    }}
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="block-container"],
+    [data-testid="stHeader"],
+    [data-testid="stAppViewContainer"] > section,
+    [data-testid="stAppViewBlockContainer"],
+    [data-testid="stMainBlockContainer"],
+    section[data-testid="stMain"] > div {{
+        background: transparent !important;
+        background-color: transparent !important;
+    }}
+    .stTabs, [data-baseweb="tab-panel"] {{
+        background: transparent !important;
+    }}
+    /* Force full-width dark tab bar */
+    .stTabs {
+        background: transparent !important;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        justify-content: center !important;
+        gap: 8px !important;
+        background-color: transparent !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+        padding-bottom: 4px !important;
+        width: 100% !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 1.8rem !important;
+        padding: 10px 24px !important;
+        background-color: rgba(255,255,255,0.12) !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        margin: 0 4px !important;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #ffffff !important;
+        background-color: rgba(59,130,246,0.4) !important;
+        border: 1px solid rgba(59,130,246,0.6) !important;
+    }
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #3b82f6 !important;
+        height: 3px !important;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none !important;
+    }      
 
-.project-header {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: white;
-    padding-top: 50px;
-}
-.sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
-.card {
-    background: rgba(255,255,255,0.08) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-    border-radius: 15px !important;
-    padding: 25px !important;
-}
-.card-text {
-    color: #cbd5e0 !important;
-    font-size: 1.2rem !important;
-    line-height: 1.7 !important;
-}
-.card-title { color: white; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
-.dash-panel {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);}
-.panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-.panel-icon {
-    background: rgba(59,130,246,0.18);
-    border-radius: 9px;
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-}
-.panel-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: #f1f5f9; }
+    .project-header {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: white;
+        padding-top: 50px;
+    }
+    .sub-title { color: #9ea4ad; font-size: 1.2rem; margin-bottom: 40px; }
+    .card {
+        background: rgba(255,255,255,0.08) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 15px !important;
+        padding: 25px !important;
+    }
+    .card-text {
+        color: #cbd5e0 !important;
+        font-size: 1.2rem !important;
+        line-height: 1.7 !important;
+    }
+    .card-title { color: white; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
+    .dash-panel {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);}
+    .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .panel-icon {
+        background: rgba(59,130,246,0.18);
+        border-radius: 9px;
+        width: 36px; height: 36px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+    }
+    .panel-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: #f1f5f9; }
 
-/* Keep sliders and interactive elements readable */
-div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] * {
-    background: transparent !important;
-}
-div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [role="slider"] {
-    background: #3b82f6 !important;
-}
-div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [data-testid="stSliderTrackFill"] {
-    background: #3b82f6 !important;
-}
-/* Slider track background (unfilled portion) */
-[data-testid="stSlider"] [data-baseweb="slider"] [role="progressbar"] {
-    background: rgba(0,0,0,0.4) !important;
-}
-[data-testid="stSlider"] [data-baseweb="slider"] div[data-testid="stSliderTrack"] {
-    background: rgba(0,0,0,0.4) !important;
-}
-[data-testid="stSlider"] [data-baseweb="slider"] > div > div {
-    background: rgba(0,0,0,0.4) !important;
-}
-div[data-testid="stDateInput"] label {
-    font-size: 0.6rem !important; font-weight: 700 !important;
-    letter-spacing: 1.8px !important; text-transform: uppercase !important;
-    color: #64748b !important;
-}
-div[data-testid="stDateInput"] input {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important; color: #e2e8f0 !important;
-}
-div[data-testid="stSelectbox"] label {
-    font-size: 0.6rem !important; font-weight: 700 !important;
-    letter-spacing: 1.8px !important; text-transform: uppercase !important;
-    color: #64748b !important;
-}
-div[data-testid="stSelectbox"] > div > div {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important; color: #e2e8f0 !important;
-}
-div[data-testid="stButton"] > button {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
-    color: white !important; border: none !important;
-    border-radius: 10px !important; padding: 12px 28px !important;
-    font-size: 0.88rem !important; font-weight: 700 !important;
-    letter-spacing: 1px !important; text-transform: uppercase !important;
-    width: 100% !important;
-}
-div[data-testid="stButton"] > button:hover {
-    background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
-    box-shadow: 0 8px 25px rgba(37,99,235,0.4) !important;
-}
-div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-    background-color: rgba(255,255,255,0.9) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255,255,255,0.3) !important;
-    border-radius: 8px !important;
-    color: #000000 !important;
-}
-div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {
-    color: #000000 !important;
-}
-[data-testid="stSlider"] [data-baseweb="slider"] > div:first-child {
-    background: rgba(0,0,0,0.35) !important;
-    height: 4px !important;
-    border-radius: 2px !important;
-}
-[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
-    background: #3b82f6 !important;
-    border-color: #3b82f6 !important;
-}
+    /* Keep sliders and interactive elements readable */
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] * {
+        background: transparent !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [role="slider"] {
+        background: #3b82f6 !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="slider"] [data-testid="stSliderTrackFill"] {
+        background: #3b82f6 !important;
+    }
+    /* Slider track background (unfilled portion) */
+    [data-testid="stSlider"] [data-baseweb="slider"] [role="progressbar"] {
+        background: rgba(0,0,0,0.4) !important;
+    }
+    [data-testid="stSlider"] [data-baseweb="slider"] div[data-testid="stSliderTrack"] {
+        background: rgba(0,0,0,0.4) !important;
+    }
+    [data-testid="stSlider"] [data-baseweb="slider"] > div > div {
+        background: rgba(0,0,0,0.4) !important;
+    }
+    div[data-testid="stDateInput"] label {
+        font-size: 0.6rem !important; font-weight: 700 !important;
+        letter-spacing: 1.8px !important; text-transform: uppercase !important;
+        color: #64748b !important;
+    }
+    div[data-testid="stDateInput"] input {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 8px !important; color: #e2e8f0 !important;
+    }
+    div[data-testid="stSelectbox"] label {
+        font-size: 0.6rem !important; font-weight: 700 !important;
+        letter-spacing: 1.8px !important; text-transform: uppercase !important;
+        color: #64748b !important;
+    }
+    div[data-testid="stSelectbox"] > div > div {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 8px !important; color: #e2e8f0 !important;
+    }
+    div[data-testid="stButton"] > button {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        color: white !important; border: none !important;
+        border-radius: 10px !important; padding: 12px 28px !important;
+        font-size: 0.88rem !important; font-weight: 700 !important;
+        letter-spacing: 1px !important; text-transform: uppercase !important;
+        width: 100% !important;
+    }
+    div[data-testid="stButton"] > button:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+        box-shadow: 0 8px 25px rgba(37,99,235,0.4) !important;
+    }
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+        background-color: rgba(255,255,255,0.9) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255,255,255,0.3) !important;
+        border-radius: 8px !important;
+        color: #000000 !important;
+    }
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {
+        color: #000000 !important;
+    }
+    [data-testid="stSlider"] [data-baseweb="slider"] > div:first-child {
+        background: rgba(0,0,0,0.35) !important;
+        height: 4px !important;
+        border-radius: 2px !important;
+    }
+    [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
+        background: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+    }
 </style>
 """,
     unsafe_allow_html=True,
